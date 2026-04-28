@@ -275,7 +275,42 @@
     text-transform: uppercase;
     padding: 10px 12px;
     border-bottom: 1px solid var(--hair-soft);
+    cursor: pointer;
+    user-select: none;
+    position: relative;
+    transition: color 0.12s ease;
   }
+  thead th:hover { color: var(--copper-2); }
+  thead th::after {
+    content: "↕";
+    margin-left: 6px;
+    opacity: 0.25;
+    font-size: 10px;
+    letter-spacing: 0;
+    transition: opacity 0.12s ease;
+  }
+  thead th:hover::after { opacity: 0.6; }
+  thead th.th-asc {
+    color: var(--copper-2);
+  }
+  thead th.th-asc::after {
+    content: "▲";
+    opacity: 1;
+    color: var(--copper);
+    font-size: 9px;
+  }
+  thead th.th-desc {
+    color: var(--copper-2);
+  }
+  thead th.th-desc::after {
+    content: "▼";
+    opacity: 1;
+    color: var(--copper);
+    font-size: 9px;
+  }
+  /* Numeric headers: keep arrow inline but right-align cell label */
+  thead th.num { text-align: right; }
+  thead th.num::after { margin-left: 4px; }
   tbody td {
     padding: 12px;
     border-bottom: 1px solid var(--hair-soft);
@@ -4402,6 +4437,7 @@ function navigate(view) {
     content.innerHTML = VIEWS[target]();
     content.style.opacity = '1';
     decorateTablesForMobile();
+    makeTablesSortable();
     window.scrollTo({ top: 0, behavior: 'smooth' });
   }, 80);
 }
@@ -4410,7 +4446,7 @@ function navigate(view) {
    so on mobile we can show "ROUTE: CX-104" instead of just "CX-104" */
 function decorateTablesForMobile() {
   document.querySelectorAll('#content table').forEach(tbl => {
-    const headers = [...tbl.querySelectorAll('thead th')].map(th => th.textContent.trim());
+    const headers = [...tbl.querySelectorAll('thead th')].map(th => th.textContent.trim().replace(/[↕▲▼]/g, '').trim());
     if (!headers.length) return;
     tbl.querySelectorAll('tbody tr').forEach(tr => {
       [...tr.children].forEach((td, i) => {
@@ -4420,6 +4456,115 @@ function decorateTablesForMobile() {
       });
     });
   });
+}
+
+/* === SORTABLE TABLES === */
+// Click any column header to sort. Click again to flip direction.
+// Handles numbers ($, %, commas, negatives), pill rankings (HIGH > MED > LOW), and strings.
+function makeTablesSortable() {
+  document.querySelectorAll('#content table').forEach(tbl => {
+    const headers = tbl.querySelectorAll('thead th');
+    headers.forEach((th, colIdx) => {
+      // Avoid double-binding if navigate runs twice
+      if (th.dataset.sortBound) return;
+      th.dataset.sortBound = '1';
+      th.addEventListener('click', (e) => {
+        e.stopPropagation();
+        sortTableByColumn(tbl, colIdx, th);
+      });
+    });
+  });
+}
+
+function sortTableByColumn(tbl, colIdx, clickedTh) {
+  const tbody = tbl.querySelector('tbody');
+  if (!tbody) return;
+
+  // Determine direction: same column toggles, new column starts asc
+  const wasCol = parseInt(tbl.dataset.sortCol, 10);
+  const wasDir = tbl.dataset.sortDir;
+  const dir = (wasCol === colIdx && wasDir === 'asc') ? 'desc' : 'asc';
+  tbl.dataset.sortCol = colIdx;
+  tbl.dataset.sortDir = dir;
+
+  // Update header indicators
+  tbl.querySelectorAll('thead th').forEach(t => t.classList.remove('th-asc', 'th-desc'));
+  clickedTh.classList.add(dir === 'asc' ? 'th-asc' : 'th-desc');
+
+  // Sort rows. We move existing DOM nodes (preserving event handlers / data-* / attached state).
+  const rows = [...tbody.querySelectorAll('tr')];
+  rows.sort((a, b) => {
+    const A = sortKey(a.children[colIdx]);
+    const B = sortKey(b.children[colIdx]);
+    let cmp;
+    if (A.kind === B.kind && A.kind === 'number') {
+      cmp = A.val - B.val;
+    } else if (A.kind === B.kind && A.kind === 'rank') {
+      cmp = A.val - B.val;
+    } else {
+      // Mixed or string: compare stringified primary; numbers sort below strings? No — numbers wins
+      if (A.kind === 'number' && B.kind !== 'number') return -1;
+      if (B.kind === 'number' && A.kind !== 'number') return 1;
+      cmp = String(A.val).localeCompare(String(B.val));
+    }
+    return dir === 'asc' ? cmp : -cmp;
+  });
+  rows.forEach(r => tbody.appendChild(r));
+}
+
+// Returns { kind: 'number' | 'rank' | 'string', val }
+function sortKey(cell) {
+  if (!cell) return { kind: 'string', val: '' };
+  const text = (cell.textContent || '').trim();
+  if (!text || text === '—' || text === '-') return { kind: 'number', val: -Infinity };
+
+  // Pill / status rankings — higher = more severe / more notable
+  const PILL_RANK = {
+    'CRITICAL': 100,
+    'URGENT':    95,
+    'ALERT':     90,
+    'HIGH':      80,
+    'NEEDS REVIEW': 75,
+    'PARTIAL':   65,
+    'PENDING':   60,
+    'WATCH':     55,
+    'WARN':      55,
+    'MEDIUM':    50,
+    'MED':       50,
+    'GREAT':     45,
+    'FANTASTIC': 48,
+    'FILED':     40,
+    'OPEN':      35,
+    'READY':     30,
+    'LOW':       20,
+    'OK':        15,
+    'FLAT':      10,
+    'CLOSED':     5,
+  };
+  const upper = text.toUpperCase();
+  for (const [k, rank] of Object.entries(PILL_RANK)) {
+    // Match whole words to avoid e.g. "OK" matching "BOOK"
+    const re = new RegExp(`\\b${k}\\b`);
+    if (re.test(upper)) return { kind: 'rank', val: rank };
+  }
+
+  // Tenure shorthand: "28 mo" → 28
+  const moMatch = text.match(/^\s*(\d+)\s*mo\b/i);
+  if (moMatch) return { kind: 'number', val: parseFloat(moMatch[1]) };
+
+  // Days ago: "11 days ago" → 11; "< 7 days" → 7; "Yesterday" → 1
+  const daysMatch = text.match(/(\d+)\s*days?/i);
+  if (daysMatch) return { kind: 'number', val: parseFloat(daysMatch[1]) };
+  if (/yesterday/i.test(text)) return { kind: 'number', val: 1 };
+
+  // Numeric: $1,234.56  -57.5%  +0.4  −1.4
+  const cleaned = text.replace(/[$,\s%]/g, '').replace(/[−–]/g, '-');
+  if (/^[-+]?\d*\.?\d+$/.test(cleaned)) {
+    return { kind: 'number', val: parseFloat(cleaned) };
+  }
+
+  // Fallback: string compare (case-insensitive)
+  return { kind: 'string', val: text.toLowerCase() };
 }
 
 document.querySelectorAll('.nav-item').forEach(n => {
