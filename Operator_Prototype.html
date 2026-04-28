@@ -1047,7 +1047,9 @@
     box-shadow: 0 0 6px var(--green);
   }
 
-  /* Demo banner — inline in topbar, no overlap */
+  /* ===================== MOBILE RESPONSIVE ===================== */
+
+  /* Demo banner — inline in topbar (desktop default) */
   .demo-pill {
     display: inline-flex;
     align-items: center;
@@ -1068,20 +1070,274 @@
     box-shadow: 0 0 6px var(--copper-2);
   }
 
-  /* Responsive */
-  @media (max-width: 1100px) {
-    .col-3, .col-4, .col-5, .col-6, .col-7, .col-8, .col-9 { grid-column: span 6; }
+  /* Hamburger button (hidden on desktop) */
+  .hamburger {
+    display: none;
+    align-items: center; justify-content: center;
+    width: 40px; height: 40px;
+    border: 1px solid var(--hairline);
+    background: transparent;
+    color: var(--ink);
+    cursor: pointer;
+    border-radius: 4px;
+    flex-shrink: 0;
   }
-  @media (max-width: 700px) {
-    .app { grid-template-columns: 1fr; }
-    .sidebar { position: relative; height: auto; }
-    .col-3, .col-4, .col-5, .col-6, .col-7, .col-8, .col-9 { grid-column: span 12; }
+  .hamburger svg { width: 18px; height: 18px; }
+  .hamburger:hover { border-color: var(--copper); color: var(--copper-2); }
+
+  /* Sidebar backdrop for mobile */
+  .sidebar-backdrop {
+    display: none;
+    position: fixed; inset: 0;
+    background: rgba(5,10,25,0.55);
+    backdrop-filter: blur(2px);
+    z-index: 60;
   }
+  .sidebar-backdrop.open { display: block; }
+
+  /* === MOBILE TABLET (≤ 768px) === */
+  @media (max-width: 768px) {
+
+    /* Show hamburger, hide search button text */
+    .hamburger { display: flex; }
+
+    /* Sidebar becomes off-canvas drawer */
+    .app { display: block; }
+    .sidebar {
+      position: fixed; top: 0; left: 0;
+      width: 260px; height: 100vh;
+      transform: translateX(-100%);
+      transition: transform 0.25s cubic-bezier(0.22,0.61,0.36,1);
+      z-index: 65;
+      box-shadow: 14px 0 40px rgba(0,0,0,0.5);
+    }
+    .sidebar.mobile-open { transform: translateX(0); }
+
+    /* Main content full-width */
+    .main { margin-left: 0; padding-bottom: 30px; }
+
+    /* Topbar slim and tight */
+    .topbar {
+      padding: 12px 14px;
+      gap: 10px;
+      flex-wrap: nowrap;
+      align-items: center;
+    }
+    .station { font-size: 16px; line-height: 1.2; }
+    .station-sub, .topbar .station + div { font-size: 10px; }
+    .demo-pill { display: none; }
+    /* Hide topbar stat group on mobile (revenue/margin/scorecard live tickers) */
+    .topbar-right > .topbar-stat,
+    .topbar-right > div:not(:last-child) { display: none; }
+    .topbar-right { gap: 8px; margin-left: auto; }
+    .topbar-right .btn { padding: 8px 10px; font-size: 10px; }
+
+    /* Content padding */
+    .content { padding: 14px 12px 80px; }
+
+    /* All multi-column grid items full-width by default */
+    .grid > [class*="col-"] { grid-column: 1 / -1 !important; }
+    /* Special: KPI hero cards 2×2 */
+    .grid > .col-3.kpi { grid-column: span 6 !important; }
+    .kpi .v { font-size: 28px !important; }
+    .kpi .label { font-size: 9px !important; }
+
+    /* Cards tighten */
+    .card { padding: 14px; border-radius: 4px; }
+    .card-hd { padding-bottom: 10px; flex-wrap: wrap; gap: 8px; }
+    .card-hd h3 { font-size: 13px; }
+    .card-hd .label { font-size: 9px; }
+
+    /* Section heads stack */
+    .section-head { flex-wrap: wrap; gap: 10px; align-items: stretch; }
+    .section-head > div:first-child { width: 100%; }
+    .section-head h2 { font-size: 18px; line-height: 1.25; }
+    .section-head [style*="display:flex"] { width: 100%; gap: 8px !important; }
+    .section-head .btn { flex: 1; text-align: center; padding: 11px 10px; font-size: 10px; }
+
+    /* Alert bar wraps */
+    .alert-bar {
+      flex-wrap: wrap;
+      gap: 10px;
+      padding: 12px 14px;
+    }
+    .alert-bar .copy { font-size: 12px; line-height: 1.45; }
+    .alert-bar .btn-line { width: 100%; text-align: center; padding-top: 4px; border-top: 1px solid rgba(217,119,6,0.2); }
+
+    /* === TABLE → CARD CONVERSION === */
+    table { display: block; }
+    table thead { display: none; }
+    table tbody { display: block; }
+    table tbody tr {
+      display: block;
+      padding: 14px;
+      background: rgba(22, 36, 78, 0.4);
+      border: 1px solid var(--hair-soft);
+      border-radius: 4px;
+      margin-bottom: 8px;
+      cursor: pointer;
+    }
+    table tbody tr:hover { background: rgba(217, 119, 6, 0.08); }
+    table tbody tr td {
+      display: flex;
+      justify-content: space-between;
+      align-items: center;
+      gap: 12px;
+      padding: 5px 0;
+      border: none;
+      font-size: 12px;
+      text-align: right;
+    }
+    /* Show column label on left of each value */
+    table tbody tr td:not(:first-child)::before {
+      content: attr(data-label);
+      color: var(--muted);
+      font-size: 9px;
+      letter-spacing: 0.08em;
+      text-transform: uppercase;
+      font-weight: 600;
+      flex-shrink: 0;
+      text-align: left;
+    }
+    table tbody tr td:first-child {
+      font-size: 14px;
+      font-weight: 600;
+      padding-bottom: 10px;
+      margin-bottom: 6px;
+      border-bottom: 1px solid var(--hair-soft);
+      justify-content: flex-start;
+      text-align: left;
+    }
+    /* Avatar + name combo retains layout in first cell */
+    table tbody tr td:first-child > div[style*="display:flex"] { width: 100%; }
+    /* Numeric cells right-align */
+    table tbody tr td.num { font-family: 'Inter', system-ui, sans-serif; font-weight: 600; }
+    /* Hide visual-only progress bars on mobile (mbar) */
+    table tbody tr td:has(.mbar) { display: none; }
+    /* Hide action button cells on mobile (whole row is tappable) */
+    table tbody tr td:last-child:has(.btn-line) { display: none; }
+
+    /* List rows on mobile */
+    .list-row {
+      flex-wrap: wrap;
+      gap: 8px 12px;
+      padding: 12px 14px;
+      background: rgba(22, 36, 78, 0.3);
+      border: 1px solid var(--hair-soft);
+      border-radius: 4px;
+      margin-bottom: 6px;
+    }
+    .list-row > div:first-child { flex: 1 1 100%; }
+    .list-row .pill { font-size: 9px; }
+
+    /* KPI sparkbox smaller */
+    .sparkbox { display: none; }
+    .kpi .delta { font-size: 10px; }
+
+    /* Cost mix donut + legend stack vertically */
+    .card-bd[style*="display:flex"][style*="gap:24px"] {
+      flex-direction: column !important;
+      gap: 16px !important;
+    }
+
+    /* Drilldown drawer header padding tighter */
+    .drawer-hd { padding: 18px 18px 14px; }
+    .drawer-hd h2 { font-size: 19px; }
+    .drawer-bd { padding: 16px 18px 24px; }
+    /* Drawer stat row 1 column on phones */
+    .d-stat-row { grid-template-columns: 1fr; gap: 8px; }
+    .d-stat .v { font-size: 20px; }
+    .d-evidence { grid-template-columns: 1fr; }
+
+    /* Modal nearly fullscreen */
+    .modal {
+      width: calc(100vw - 16px);
+      max-width: calc(100vw - 16px);
+      max-height: calc(100vh - 16px);
+      top: 50%; left: 50%;
+    }
+    .modal.modal-lg { width: calc(100vw - 16px); }
+    .modal-hd { padding: 16px 18px 12px; }
+    .modal-hd h2 { font-size: 17px; }
+    .modal-bd { padding: 14px 18px; }
+    .modal-ft { padding: 12px 18px; flex-wrap: wrap; gap: 8px; }
+    .modal-ft .modal-ft-info { flex: 1 1 100%; order: -1; padding-bottom: 4px; }
+    .modal-ft .btn-sm { flex: 1; text-align: center; padding: 10px 8px; }
+
+    /* Cmdk takes nearly full viewport */
+    .cmdk {
+      top: 6vh;
+      width: calc(100vw - 16px);
+      max-width: calc(100vw - 16px);
+    }
+    .cmdk-results { max-height: 60vh; }
+    .cmdk-row { padding: 12px 16px; }
+    .cmdk-row .cmdk-name { font-size: 13px; }
+    .cmdk-row .cmdk-sub { font-size: 11px; }
+    .cmdk-footer { font-size: 9px; gap: 10px; }
+
+    /* Popover positions over the viewport (anchored becomes centered) */
+    .popover {
+      position: fixed !important;
+      top: auto !important;
+      bottom: 12px;
+      left: 8px !important;
+      right: 8px;
+      max-width: none;
+      width: auto;
+    }
+
+    /* PM calendar grid cells smaller on mobile */
+    .pm-cell { aspect-ratio: 1; padding: 4px; }
+    .pm-cell-date { font-size: 11px; }
+    .pm-cell-vans { font-size: 8px; line-height: 1.2; }
+
+    /* Modal cards */
+    .m-card { padding: 12px; }
+    .m-card-hd { flex-wrap: wrap; gap: 8px; }
+    .m-card-hd .m-card-title { font-size: 12px; flex: 1 1 100%; }
+    .m-card-hd .pill { font-size: 9px; }
+    .m-card-actions { flex-wrap: wrap; }
+    .m-card-actions .btn-sm { flex: 1; min-width: 100px; padding: 9px; }
+
+    /* Chart inside historical modal: smaller height */
+    .modal-bd svg { max-height: 200px; }
+
+    /* Toast wider for thumbs */
+    .toast { font-size: 12px; padding: 12px 16px; bottom: 16px; }
+
+    /* Avatar sizes */
+    .avatar { width: 32px; height: 32px; font-size: 11px; }
+  }
+
+  /* === SMALL PHONE (≤ 480px) === */
+  @media (max-width: 480px) {
+    body { font-size: 12px; }
+    .station { font-size: 15px; }
+    .content { padding: 12px 10px 80px; }
+    .card { padding: 12px; }
+    .kpi .v { font-size: 24px !important; }
+    .grid { gap: 8px; }
+    .section-head h2 { font-size: 16px; }
+    .topbar-right .btn { padding: 7px 8px; font-size: 9px; }
+  }
+
+  /* === TABLET / SMALL DESKTOP (769px - 1100px) === */
+  @media (min-width: 769px) and (max-width: 1100px) {
+    /* Card grid: collapse 3-col to 6-col so cards aren't squished */
+    .col-3, .col-4, .col-5 { grid-column: span 6; }
+    .col-7, .col-8, .col-9 { grid-column: span 12; }
+  }
+
+  /* Responsive — see comprehensive mobile block above */
 </style>
 </head>
 <body>
 
 <div class="app">
+
+  <!-- Sidebar backdrop (mobile only) -->
+  <div class="sidebar-backdrop" id="sidebar-backdrop" onclick="closeSidebar()"></div>
 
   <!-- ============= SIDEBAR ============= -->
   <aside class="sidebar">
@@ -1146,6 +1402,9 @@
 
     <!-- TOP BAR -->
     <div class="topbar">
+      <button class="hamburger" id="hamburger" aria-label="Open menu" onclick="toggleSidebar()">
+        <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><line x1="3" y1="6" x2="21" y2="6"/><line x1="3" y1="12" x2="21" y2="12"/><line x1="3" y1="18" x2="21" y2="18"/></svg>
+      </button>
       <div>
         <div class="station">Sonoran Last Mile, LLC</div>
         <div class="station-meta">DAZ4 · Phoenix, AZ  ·  25 routes · 52 DAs · 28 vans</div>
@@ -2617,9 +2876,11 @@ document.addEventListener('keydown', (e) => {
     const cmdk = document.getElementById('cmdk');
     const popover = document.getElementById('popover');
     const modal = document.getElementById('modal');
+    const sb = document.querySelector('.sidebar');
     if (cmdk && cmdk.classList.contains('open')) { closeCmdK(); return; }
     if (popover && popover.classList.contains('open')) { closePopover(); return; }
     if (modal && modal.classList.contains('open')) { closeModal(); return; }
+    if (sb && sb.classList.contains('mobile-open')) { closeSidebar(); return; }
     closeDrawer();
   }
 });
@@ -4087,13 +4348,50 @@ function navigate(view) {
   setTimeout(() => {
     content.innerHTML = VIEWS[target]();
     content.style.opacity = '1';
+    decorateTablesForMobile();
     window.scrollTo({ top: 0, behavior: 'smooth' });
   }, 80);
 }
 
+/* Auto-add data-label attributes to td elements based on thead headers,
+   so on mobile we can show "ROUTE: CX-104" instead of just "CX-104" */
+function decorateTablesForMobile() {
+  document.querySelectorAll('#content table').forEach(tbl => {
+    const headers = [...tbl.querySelectorAll('thead th')].map(th => th.textContent.trim());
+    if (!headers.length) return;
+    tbl.querySelectorAll('tbody tr').forEach(tr => {
+      [...tr.children].forEach((td, i) => {
+        if (headers[i] && !td.hasAttribute('data-label')) {
+          td.setAttribute('data-label', headers[i]);
+        }
+      });
+    });
+  });
+}
+
 document.querySelectorAll('.nav-item').forEach(n => {
-  n.addEventListener('click', () => navigate(n.dataset.view));
+  n.addEventListener('click', () => {
+    navigate(n.dataset.view);
+    closeSidebar(); // Close mobile sidebar after navigation
+  });
 });
+
+/* === MOBILE SIDEBAR === */
+function toggleSidebar() {
+  const sb = document.querySelector('.sidebar');
+  const bd = document.getElementById('sidebar-backdrop');
+  const open = sb.classList.toggle('mobile-open');
+  bd.classList.toggle('open', open);
+  document.body.style.overflow = open ? 'hidden' : '';
+}
+function closeSidebar() {
+  const sb = document.querySelector('.sidebar');
+  if (sb.classList.contains('mobile-open')) {
+    sb.classList.remove('mobile-open');
+    document.getElementById('sidebar-backdrop').classList.remove('open');
+    document.body.style.overflow = '';
+  }
+}
 document.getElementById('content').style.transition = 'opacity 0.18s ease';
 
 /* Initial render */
