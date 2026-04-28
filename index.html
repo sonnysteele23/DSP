@@ -1,0 +1,1481 @@
+<!doctype html>
+<html lang="en">
+<head>
+<meta charset="utf-8" />
+<meta name="viewport" content="width=device-width,initial-scale=1" />
+<title>Operator — Sonoran Last Mile · DAZ4</title>
+<link rel="preconnect" href="https://fonts.googleapis.com">
+<link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+<link href="https://fonts.googleapis.com/css2?family=Fraunces:opsz,wght@9..144,300;9..144,400;9..144,500;9..144,600;9..144,700;9..144,800&family=Inter+Tight:wght@300;400;500;600;700&family=JetBrains+Mono:wght@400;500;600&display=swap" rel="stylesheet">
+<style>
+  :root {
+    --navy-deep: #0A1330;
+    --navy:      #0F1B3C;
+    --navy-2:    #16244E;
+    --navy-3:    #1E2F60;
+    --hairline:  #243463;
+    --hair-soft: #1B2A55;
+    --copper:    #D97706;
+    --copper-2:  #F59E0B;
+    --copper-glow: rgba(245, 158, 11, 0.18);
+    --ink:       #F5F2EA;
+    --body:      #C8CDDB;
+    --muted:     #7A88AB;
+    --dim:       #4A567B;
+    --green:     #34D399;
+    --green-bg:  rgba(52, 211, 153, 0.10);
+    --red:       #F87171;
+    --red-bg:    rgba(248, 113, 113, 0.10);
+    --amber:     #FBBF24;
+    --amber-bg:  rgba(251, 191, 36, 0.10);
+  }
+
+  * { box-sizing: border-box; }
+  html, body { margin: 0; padding: 0; }
+
+  body {
+    font-family: 'Inter Tight', system-ui, sans-serif;
+    background: var(--navy-deep);
+    color: var(--ink);
+    font-size: 13px;
+    line-height: 1.5;
+    -webkit-font-smoothing: antialiased;
+    min-height: 100vh;
+    background-image:
+      radial-gradient(circle at 12% 8%, rgba(217, 119, 6, 0.08) 0%, transparent 35%),
+      radial-gradient(circle at 95% 95%, rgba(30, 47, 96, 0.5) 0%, transparent 50%);
+    background-attachment: fixed;
+  }
+
+  /* Faint grid overlay for cockpit feel */
+  body::before {
+    content: "";
+    position: fixed; inset: 0;
+    pointer-events: none;
+    background-image:
+      linear-gradient(rgba(36, 52, 99, 0.08) 1px, transparent 1px),
+      linear-gradient(90deg, rgba(36, 52, 99, 0.08) 1px, transparent 1px);
+    background-size: 48px 48px;
+    z-index: 0;
+  }
+
+  .display { font-family: 'Fraunces', Georgia, serif; font-feature-settings: "ss01", "ss02"; letter-spacing: -0.01em; }
+  .mono    { font-family: 'JetBrains Mono', monospace; }
+  .kicker  { font-size: 10px; letter-spacing: 0.18em; text-transform: uppercase; color: var(--copper-2); font-weight: 600; }
+  .label   { font-size: 10px; letter-spacing: 0.14em; text-transform: uppercase; color: var(--muted); font-weight: 500; }
+
+  /* ---- LAYOUT ---- */
+  .app { position: relative; z-index: 1; display: grid; grid-template-columns: 220px 1fr; min-height: 100vh; }
+
+  /* ---- SIDEBAR ---- */
+  .sidebar {
+    background: rgba(10, 19, 48, 0.7);
+    backdrop-filter: blur(8px);
+    border-right: 1px solid var(--hair-soft);
+    padding: 22px 0 22px 22px;
+    position: sticky; top: 0;
+    height: 100vh;
+    overflow-y: auto;
+  }
+  .brand {
+    display: flex; align-items: center; gap: 10px;
+    margin-bottom: 28px;
+    padding-right: 22px;
+  }
+  .brand-mark {
+    width: 22px; height: 22px;
+    background: var(--copper);
+    position: relative;
+  }
+  .brand-mark::after {
+    content: "";
+    position: absolute;
+    inset: -4px;
+    background: var(--copper-glow);
+    z-index: -1;
+  }
+  .brand-name { font-family: 'Fraunces', serif; font-weight: 700; font-size: 18px; letter-spacing: 0.04em; }
+  .brand-sub  { font-size: 9px; letter-spacing: 0.22em; color: var(--copper-2); margin-top: -2px; }
+
+  .nav-group { margin-bottom: 24px; }
+  .nav-group-label { font-size: 9px; letter-spacing: 0.22em; color: var(--dim); margin-bottom: 8px; padding-left: 4px; text-transform: uppercase; }
+  .nav-item {
+    display: flex; align-items: center; gap: 10px;
+    padding: 8px 12px; margin-right: 12px;
+    border-radius: 0 999px 999px 0;
+    color: var(--body);
+    cursor: pointer;
+    font-size: 13px;
+    font-weight: 500;
+    transition: all 0.15s ease;
+    border-left: 2px solid transparent;
+    margin-left: -22px; padding-left: 22px;
+    position: relative;
+  }
+  .nav-item:hover { color: var(--ink); background: rgba(36, 52, 99, 0.3); }
+  .nav-item.active {
+    color: var(--ink);
+    background: linear-gradient(90deg, rgba(217, 119, 6, 0.14), transparent 90%);
+    border-left-color: var(--copper);
+    font-weight: 600;
+  }
+  .nav-item .icon { width: 16px; height: 16px; flex-shrink: 0; opacity: 0.85; }
+  .nav-item .badge {
+    margin-left: auto;
+    background: var(--copper);
+    color: var(--navy-deep);
+    font-family: 'JetBrains Mono', monospace;
+    font-weight: 700;
+    font-size: 9px;
+    padding: 2px 6px;
+    border-radius: 8px;
+    line-height: 1;
+  }
+  .nav-item .dot { margin-left: auto; width: 6px; height: 6px; border-radius: 50%; background: var(--green); box-shadow: 0 0 6px var(--green); }
+
+  .sidebar-footer {
+    margin-top: auto;
+    padding: 14px 22px 0 4px;
+    border-top: 1px solid var(--hair-soft);
+    margin-top: 32px;
+  }
+  .session-info { font-size: 10px; color: var(--muted); line-height: 1.6; }
+  .session-info b { color: var(--ink); font-weight: 600; }
+  .session-info .pulse {
+    display: inline-block; width: 6px; height: 6px; border-radius: 50%;
+    background: var(--green); margin-right: 6px;
+    animation: pulse 2.4s ease-in-out infinite;
+  }
+  @keyframes pulse { 0%,100% { opacity: 1; box-shadow: 0 0 0 0 rgba(52,211,153,0.5); } 50% { opacity: 0.6; box-shadow: 0 0 0 4px rgba(52,211,153,0); } }
+
+  /* ---- MAIN ---- */
+  .main { padding: 0; min-width: 0; }
+
+  /* TOP BAR */
+  .topbar {
+    display: flex; align-items: center;
+    padding: 18px 32px;
+    border-bottom: 1px solid var(--hair-soft);
+    background: rgba(10, 19, 48, 0.5);
+    backdrop-filter: blur(8px);
+    position: sticky; top: 0; z-index: 10;
+  }
+  .topbar .station {
+    font-family: 'Fraunces', serif;
+    font-size: 18px;
+    font-weight: 600;
+    letter-spacing: 0.01em;
+  }
+  .topbar .station-meta { color: var(--muted); font-size: 11px; margin-top: 2px; }
+  .topbar-right { margin-left: auto; display: flex; align-items: center; gap: 20px; }
+  .topbar-stat { text-align: right; }
+  .topbar-stat .v { font-family: 'Fraunces', serif; font-weight: 600; font-size: 17px; letter-spacing: -0.01em; }
+  .topbar-stat .l { font-size: 9px; letter-spacing: 0.18em; text-transform: uppercase; color: var(--muted); margin-top: 2px; }
+  .topbar-stat .v.green { color: var(--green); }
+  .topbar-stat .v.red   { color: var(--red); }
+  .topbar-divider { width: 1px; height: 32px; background: var(--hair-soft); }
+
+  /* CONTENT */
+  .content { padding: 28px 32px 60px; max-width: 1500px; }
+
+  .section-head { margin-bottom: 18px; display: flex; align-items: end; justify-content: space-between; }
+  .section-head h2 { margin: 0; font-family: 'Fraunces', serif; font-weight: 600; font-size: 26px; letter-spacing: -0.01em; }
+  .section-head .kicker { display: block; margin-bottom: 4px; }
+
+  /* CARD */
+  .card {
+    background: linear-gradient(180deg, rgba(22, 36, 78, 0.6), rgba(15, 27, 60, 0.6));
+    border: 1px solid var(--hair-soft);
+    border-radius: 4px;
+    position: relative;
+  }
+  .card-hd {
+    padding: 14px 18px;
+    border-bottom: 1px solid var(--hair-soft);
+    display: flex; align-items: center; gap: 10px;
+  }
+  .card-hd h3 { margin: 0; font-family: 'Fraunces', serif; font-size: 14px; font-weight: 600; letter-spacing: 0.01em; }
+  .card-hd .label { margin-left: auto; }
+  .card-bd { padding: 18px; }
+  .card-accent { position: absolute; top: 0; left: 0; bottom: 0; width: 2px; background: var(--copper); }
+
+  /* GRID HELPERS */
+  .grid { display: grid; gap: 16px; }
+  .g-12 { grid-template-columns: repeat(12, 1fr); }
+  .col-3 { grid-column: span 3; }
+  .col-4 { grid-column: span 4; }
+  .col-5 { grid-column: span 5; }
+  .col-6 { grid-column: span 6; }
+  .col-7 { grid-column: span 7; }
+  .col-8 { grid-column: span 8; }
+  .col-9 { grid-column: span 9; }
+  .col-12 { grid-column: span 12; }
+
+  /* KPI BIG STAT */
+  .kpi { padding: 18px 20px; }
+  .kpi .label { margin-bottom: 12px; display: flex; align-items: center; gap: 8px; }
+  .kpi .label .icn { width: 12px; height: 12px; opacity: 0.6; }
+  .kpi .v {
+    font-family: 'Fraunces', serif;
+    font-size: 38px; font-weight: 600;
+    letter-spacing: -0.02em;
+    line-height: 1;
+  }
+  .kpi .v.green { color: var(--green); }
+  .kpi .v.red   { color: var(--red); }
+  .kpi .v.amber { color: var(--amber); }
+  .kpi .delta { display: flex; align-items: center; gap: 6px; margin-top: 10px; font-size: 11px; }
+  .kpi .delta.up   { color: var(--green); }
+  .kpi .delta.down { color: var(--red); }
+  .kpi .delta .arr { font-family: 'JetBrains Mono', monospace; font-weight: 600; }
+  .kpi .sub { color: var(--muted); font-size: 10px; }
+  .kpi .sparkbox { margin-top: 8px; height: 26px; }
+
+  /* ALERT BAR */
+  .alert-bar {
+    display: flex; align-items: center; gap: 14px;
+    padding: 12px 18px;
+    background: linear-gradient(90deg, rgba(217, 119, 6, 0.16), rgba(217, 119, 6, 0.04) 70%, transparent);
+    border: 1px solid rgba(217, 119, 6, 0.4);
+    border-left: 3px solid var(--copper);
+    margin-bottom: 18px;
+    border-radius: 2px;
+  }
+  .alert-bar .siren {
+    width: 8px; height: 8px; border-radius: 50%;
+    background: var(--copper-2);
+    box-shadow: 0 0 12px var(--copper-2);
+    animation: blip 1.6s ease-in-out infinite;
+  }
+  @keyframes blip { 0%,100% { opacity: 1; } 50% { opacity: 0.3; } }
+  .alert-bar .copy { flex: 1; }
+  .alert-bar .copy b { color: var(--copper-2); }
+  .alert-bar .btn-line { color: var(--copper-2); font-weight: 600; font-size: 11px; letter-spacing: 0.06em; cursor: pointer; }
+  .alert-bar .btn-line:hover { text-decoration: underline; }
+
+  /* TABLES */
+  table { width: 100%; border-collapse: collapse; font-size: 12px; }
+  thead th {
+    text-align: left;
+    color: var(--muted);
+    font-weight: 500;
+    font-size: 9.5px;
+    letter-spacing: 0.18em;
+    text-transform: uppercase;
+    padding: 10px 12px;
+    border-bottom: 1px solid var(--hair-soft);
+  }
+  tbody td {
+    padding: 12px;
+    border-bottom: 1px solid var(--hair-soft);
+    vertical-align: middle;
+  }
+  tbody tr:last-child td { border-bottom: none; }
+  tbody tr:hover { background: rgba(30, 47, 96, 0.3); }
+  td.num { font-family: 'JetBrains Mono', monospace; font-weight: 500; text-align: right; }
+  th.num { text-align: right; }
+
+  /* BADGES & PILLS */
+  .pill {
+    display: inline-flex; align-items: center; gap: 5px;
+    padding: 3px 9px;
+    border-radius: 999px;
+    font-size: 10px;
+    font-weight: 600;
+    letter-spacing: 0.04em;
+  }
+  .pill-green { background: var(--green-bg); color: var(--green); border: 1px solid rgba(52,211,153,0.3); }
+  .pill-red   { background: var(--red-bg);   color: var(--red);   border: 1px solid rgba(248,113,113,0.3); }
+  .pill-amber { background: var(--amber-bg); color: var(--amber); border: 1px solid rgba(251,191,36,0.3); }
+  .pill-copper { background: rgba(217,119,6,0.14); color: var(--copper-2); border: 1px solid rgba(217,119,6,0.4); }
+  .pill-dim   { background: rgba(74,86,123,0.18); color: var(--body); border: 1px solid var(--hair-soft); }
+  .pill .dot  { width: 5px; height: 5px; border-radius: 50%; background: currentColor; }
+
+  /* COUNTDOWN */
+  .countdown {
+    font-family: 'JetBrains Mono', monospace;
+    font-weight: 600;
+    font-size: 11px;
+    color: var(--amber);
+  }
+  .countdown.urgent { color: var(--red); animation: blip 1.4s ease-in-out infinite; }
+
+  /* MINI BAR (in-cell) */
+  .mbar {
+    height: 4px;
+    background: var(--hair-soft);
+    border-radius: 2px;
+    overflow: hidden;
+    width: 100%;
+  }
+  .mbar > div { height: 100%; background: var(--copper); }
+  .mbar > div.green { background: var(--green); }
+  .mbar > div.red   { background: var(--red); }
+  .mbar > div.amber { background: var(--amber); }
+
+  /* CHART CONTAINERS */
+  .chart-wrap { width: 100%; }
+  svg { display: block; }
+
+  /* AVATAR */
+  .avatar {
+    width: 28px; height: 28px;
+    border-radius: 50%;
+    background: linear-gradient(135deg, var(--navy-3), var(--copper));
+    display: inline-flex; align-items: center; justify-content: center;
+    font-family: 'Fraunces', serif;
+    font-weight: 600;
+    font-size: 11px;
+    color: var(--ink);
+    flex-shrink: 0;
+  }
+
+  /* BUTTONS */
+  .btn {
+    display: inline-flex; align-items: center; gap: 8px;
+    padding: 8px 16px;
+    border: 1px solid var(--hairline);
+    background: transparent;
+    color: var(--ink);
+    font-family: 'Inter Tight', sans-serif;
+    font-size: 11px;
+    font-weight: 600;
+    letter-spacing: 0.06em;
+    text-transform: uppercase;
+    border-radius: 2px;
+    cursor: pointer;
+    transition: all 0.12s ease;
+  }
+  .btn:hover { border-color: var(--copper); color: var(--copper-2); }
+  .btn-primary {
+    background: var(--copper); color: var(--navy-deep); border-color: var(--copper);
+  }
+  .btn-primary:hover { background: var(--copper-2); border-color: var(--copper-2); color: var(--navy-deep); }
+
+  /* SCORECARD METER */
+  .meter {
+    display: flex;
+    height: 22px;
+    border-radius: 3px;
+    overflow: hidden;
+    background: var(--hair-soft);
+    margin: 8px 0 12px;
+    position: relative;
+  }
+  .meter > div { transition: flex 0.3s ease; position: relative; }
+  .meter .seg-fantastic-plus { background: linear-gradient(90deg, #10B981, #34D399); flex: 1.5; }
+  .meter .seg-fantastic { background: linear-gradient(90deg, #34D399, #6EE7B7); flex: 2; }
+  .meter .seg-great { background: linear-gradient(90deg, #FBBF24, #FCD34D); flex: 2; }
+  .meter .seg-fair { background: linear-gradient(90deg, #F87171, #FCA5A5); flex: 2; }
+  .meter .seg-poor { background: linear-gradient(90deg, #EF4444, #DC2626); flex: 1.5; }
+  .meter-marker {
+    position: absolute;
+    top: -4px; bottom: -4px;
+    width: 2px;
+    background: var(--ink);
+    box-shadow: 0 0 8px rgba(245, 242, 234, 0.8);
+  }
+  .meter-marker::before {
+    content: "";
+    position: absolute;
+    top: -4px; left: -3px;
+    width: 8px; height: 8px;
+    background: var(--ink);
+    transform: rotate(45deg);
+  }
+  .meter-labels {
+    display: flex; justify-content: space-between;
+    font-size: 9px;
+    letter-spacing: 0.1em;
+    color: var(--muted);
+    text-transform: uppercase;
+  }
+
+  /* SECTION TABS (within views) */
+  .tabs { display: flex; gap: 0; border-bottom: 1px solid var(--hair-soft); margin-bottom: 20px; }
+  .tab { padding: 10px 18px; color: var(--muted); cursor: pointer; font-size: 11px; letter-spacing: 0.1em; text-transform: uppercase; font-weight: 600; border-bottom: 2px solid transparent; margin-bottom: -1px; }
+  .tab:hover { color: var(--body); }
+  .tab.active { color: var(--copper-2); border-bottom-color: var(--copper); }
+
+  /* ICONS (SVG inline) - reused */
+  .icn { width: 14px; height: 14px; vertical-align: middle; }
+
+  /* ACTIVITY FEED */
+  .feed-item { display: grid; grid-template-columns: 24px 1fr auto; gap: 12px; padding: 12px 0; border-bottom: 1px solid var(--hair-soft); align-items: start; }
+  .feed-item:last-child { border-bottom: none; }
+  .feed-dot { width: 8px; height: 8px; border-radius: 50%; margin-top: 6px; }
+  .feed-dot.copper { background: var(--copper); box-shadow: 0 0 8px var(--copper-glow); }
+  .feed-dot.green  { background: var(--green); }
+  .feed-dot.red    { background: var(--red); }
+  .feed-dot.muted  { background: var(--dim); }
+  .feed-meta { color: var(--muted); font-size: 10px; font-family: 'JetBrains Mono', monospace; }
+  .feed-time { color: var(--muted); font-family: 'JetBrains Mono', monospace; font-size: 10px; }
+  .feed-body { font-size: 12px; color: var(--body); }
+  .feed-body b { color: var(--ink); font-weight: 600; }
+
+  /* LIST ROW */
+  .list-row { display: grid; grid-template-columns: 1fr auto auto; gap: 14px; padding: 11px 0; border-bottom: 1px solid var(--hair-soft); align-items: center; }
+  .list-row:last-child { border-bottom: none; }
+  .list-row .name { font-weight: 500; }
+
+  /* Hide scrollbar styling */
+  ::-webkit-scrollbar { width: 8px; height: 8px; }
+  ::-webkit-scrollbar-track { background: transparent; }
+  ::-webkit-scrollbar-thumb { background: var(--hairline); border-radius: 4px; }
+
+  /* SPACERS */
+  .stack > * + * { margin-top: 16px; }
+  .small { font-size: 11px; color: var(--muted); }
+
+  /* Demo banner — inline in topbar, no overlap */
+  .demo-pill {
+    display: inline-flex;
+    align-items: center;
+    gap: 6px;
+    padding: 4px 10px;
+    border: 1px solid var(--copper);
+    color: var(--copper-2);
+    font-size: 9px;
+    letter-spacing: 0.16em;
+    text-transform: uppercase;
+    border-radius: 999px;
+    font-weight: 600;
+  }
+  .demo-pill::before {
+    content: "";
+    width: 5px; height: 5px; border-radius: 50%;
+    background: var(--copper-2);
+    box-shadow: 0 0 6px var(--copper-2);
+  }
+
+  /* Responsive */
+  @media (max-width: 1100px) {
+    .col-3, .col-4, .col-5, .col-6, .col-7, .col-8, .col-9 { grid-column: span 6; }
+  }
+  @media (max-width: 700px) {
+    .app { grid-template-columns: 1fr; }
+    .sidebar { position: relative; height: auto; }
+    .col-3, .col-4, .col-5, .col-6, .col-7, .col-8, .col-9 { grid-column: span 12; }
+  }
+</style>
+</head>
+<body>
+
+<div class="app">
+
+  <!-- ============= SIDEBAR ============= -->
+  <aside class="sidebar">
+    <div class="brand">
+      <div class="brand-mark"></div>
+      <div>
+        <div class="brand-name">OPERATOR</div>
+        <div class="brand-sub">DAZ4 · PHOENIX</div>
+      </div>
+    </div>
+
+    <div class="nav-group">
+      <div class="nav-group-label">Cockpit</div>
+      <div class="nav-item active" data-view="dashboard">
+        <svg class="icon" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.7"><rect x="3" y="3" width="7" height="9"/><rect x="14" y="3" width="7" height="5"/><rect x="14" y="12" width="7" height="9"/><rect x="3" y="16" width="7" height="5"/></svg>
+        Dashboard
+      </div>
+    </div>
+
+    <div class="nav-group">
+      <div class="nav-group-label">Modules</div>
+      <div class="nav-item" data-view="financial">
+        <svg class="icon" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.7"><line x1="12" y1="2" x2="12" y2="22"/><path d="M17 5H9.5a3.5 3.5 0 0 0 0 7h5a3.5 3.5 0 0 1 0 7H6"/></svg>
+        Financial Truth
+      </div>
+      <div class="nav-item" data-view="labor">
+        <svg class="icon" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.7"><circle cx="12" cy="12" r="10"/><polyline points="12 6 12 12 16 14"/></svg>
+        Labor Engine
+        <span class="badge">3</span>
+      </div>
+      <div class="nav-item" data-view="drivers">
+        <svg class="icon" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.7"><path d="M17 21v-2a4 4 0 0 0-4-4H5a4 4 0 0 0-4 4v2"/><circle cx="9" cy="7" r="4"/><path d="M23 21v-2a4 4 0 0 0-3-3.87"/><path d="M16 3.13a4 4 0 0 1 0 7.75"/></svg>
+        Driver Hub
+      </div>
+      <div class="nav-item" data-view="fleet">
+        <svg class="icon" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.7"><rect x="1" y="3" width="15" height="13"/><polygon points="16 8 20 8 23 11 23 16 16 16 16 8"/><circle cx="5.5" cy="18.5" r="2.5"/><circle cx="18.5" cy="18.5" r="2.5"/></svg>
+        Fleet Health
+      </div>
+      <div class="nav-item" data-view="disputes">
+        <svg class="icon" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.7"><path d="M14 2H6a2 2 0 0 0-2 2v16a2 2 0 0 0 2 2h12a2 2 0 0 0 2-2V8z"/><polyline points="14 2 14 8 20 8"/><line x1="9" y1="15" x2="15" y2="15"/></svg>
+        Disputes
+        <span class="badge">7</span>
+      </div>
+      <div class="nav-item" data-view="scorecard">
+        <svg class="icon" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.7"><polyline points="22 12 18 12 15 21 9 3 6 12 2 12"/></svg>
+        Scorecard
+      </div>
+    </div>
+
+    <div class="sidebar-footer">
+      <div class="session-info">
+        <span class="pulse"></span><b>Live</b><br>
+        Last sync: <b>32s ago</b><br>
+        DSP Console · Cortex · ADP<br>
+        Mentor · Netradyne · WEX
+      </div>
+    </div>
+  </aside>
+
+  <!-- ============= MAIN ============= -->
+  <main class="main">
+
+    <!-- TOP BAR -->
+    <div class="topbar">
+      <div>
+        <div class="station">Sonoran Last Mile, LLC</div>
+        <div class="station-meta">DAZ4 · Phoenix, AZ  ·  25 routes · 52 DAs · 28 vans</div>
+      </div>
+      <div class="topbar-right">
+        <span class="demo-pill">Prototype · Dummy Data</span>
+        <div class="topbar-divider"></div>
+        <div class="topbar-stat">
+          <div class="v" id="tb-rev">$8,427</div>
+          <div class="l">REV TODAY</div>
+        </div>
+        <div class="topbar-divider"></div>
+        <div class="topbar-stat">
+          <div class="v green" id="tb-margin">+11.4%</div>
+          <div class="l">MARGIN MTD</div>
+        </div>
+        <div class="topbar-divider"></div>
+        <div class="topbar-stat">
+          <div class="v amber">GREAT</div>
+          <div class="l">SCORECARD</div>
+        </div>
+        <div class="topbar-divider"></div>
+        <button class="btn">⌘K  ·  Search</button>
+      </div>
+    </div>
+
+    <div class="content" id="content">
+      <!-- View injected here -->
+    </div>
+  </main>
+</div>
+
+<div class="demo-banner" style="display:none"></div>
+
+<script>
+/* =====================================================================
+   DATA — Realistic dummy data shaped from the deck research
+   ===================================================================== */
+
+const STATE = {
+  station: { name: "DAZ4 — Phoenix", routes: 25, das: 52, vans: 28 },
+  today:   { rev: 8427, costRunning: 7468, margin: 0.114, weekRev: 56340, weekCost: 49916 },
+  trend:   [12,18,11,14,16,21,17,22,19,24,28,25,30,27,33,29,32,28,35,33,38,36,42,39],
+  laborTrend: [0.91, 0.95, 1.02, 1.08, 1.04, 0.99, 0.97, 1.03, 1.06, 1.11, 1.04, 0.98],
+  monthlyPL: {
+    revenue:  [231400, 248900, 265300, 271800, 269200, 280400],
+    cost:     [220900, 232400, 243700, 248100, 245700, 251300],
+    months:   ["Nov","Dec","Jan","Feb","Mar","Apr"],
+  },
+  costMix: [
+    { lbl: "Driver wages + OT",  pct: 56, val: 140728, color: "#D97706" },
+    { lbl: "Vehicle (lease/fuel/maint)", pct: 21, val: 52773, color: "#F59E0B" },
+    { lbl: "Insurance",     pct: 9,  val: 22617, color: "#FBBF24" },
+    { lbl: "Other ops + admin", pct: 8,  val: 20104, color: "#7A88AB" },
+    { lbl: "Recruiting + training", pct: 6,  val: 15078, color: "#4A567B" },
+  ],
+  drivers: [
+    { name: "Marcus Rivera",     route: "CX-104", h: 9.2, ot: 1.2, fico: 814, rescues: 0, status: "ot",   tenureMo: 28, churnRisk: "low",  scoreImpact: "+0.4" },
+    { name: "Anjali Khanna",     route: "CX-118", h: 9.5, ot: 1.5, fico: 791, rescues: 1, status: "ot",   tenureMo: 14, churnRisk: "low",  scoreImpact: "+0.2" },
+    { name: "Devon Mitchell",    route: "CX-209", h: 9.4, ot: 1.4, fico: 752, rescues: 0, status: "ot",   tenureMo: 7,  churnRisk: "med",  scoreImpact: "−0.1" },
+    { name: "Sofia Hernandez",   route: "CX-115", h: 8.6, ot: 0.0, fico: 824, rescues: 0, status: "ok",   tenureMo: 22, churnRisk: "low",  scoreImpact: "+0.5" },
+    { name: "Tyrone Banks",      route: "CX-202", h: 8.4, ot: 0.0, fico: 698, rescues: 0, status: "ok",   tenureMo: 4,  churnRisk: "high", scoreImpact: "−0.3" },
+    { name: "Priya Vasquez",     route: "CX-110", h: 8.7, ot: 0.0, fico: 803, rescues: 0, status: "ok",   tenureMo: 11, churnRisk: "low",  scoreImpact: "+0.1" },
+    { name: "Caleb Foster",      route: "CX-127", h: 8.3, ot: 0.0, fico: 776, rescues: 1, status: "ok",   tenureMo: 9,  churnRisk: "med",  scoreImpact: "0.0"  },
+    { name: "Maya Sandoval",     route: "CX-113", h: 7.9, ot: 0.0, fico: 845, rescues: 0, status: "ok",   tenureMo: 33, churnRisk: "low",  scoreImpact: "+0.6" },
+  ],
+  vans: [
+    { id: "VAN-04", route: "CX-104", miles: 142, cpm: 0.81, mpg: 13.2, fuelToday: 38.4, status: "ok",  pmDays: 18 },
+    { id: "VAN-07", route: "CX-115", miles: 138, cpm: 0.79, mpg: 13.6, fuelToday: 36.1, status: "ok",  pmDays: 11 },
+    { id: "VAN-12", route: "CX-118", miles: 156, cpm: 0.94, mpg: 11.4, fuelToday: 47.8, status: "warn",pmDays: 5 },
+    { id: "VAN-14", route: "CX-127", miles: 144, cpm: 0.83, mpg: 12.9, fuelToday: 39.2, status: "warn",pmDays: 2 },
+    { id: "VAN-19", route: "CX-202", miles: 132, cpm: 0.78, mpg: 13.8, fuelToday: 33.6, status: "ok",  pmDays: 24 },
+    { id: "VAN-22", route: "CX-110", miles: 141, cpm: 0.80, mpg: 13.4, fuelToday: 37.5, status: "ok",  pmDays: 14 },
+    { id: "VAN-23", route: "CX-209", miles: 153, cpm: 1.08, mpg: 9.8,  fuelToday: 56.20,status: "alert",pmDays: 8 },
+    { id: "VAN-27", route: "CX-113", miles: 129, cpm: 0.77, mpg: 13.9, fuelToday: 32.8, status: "ok",  pmDays: 21 },
+  ],
+  disputes: [
+    { id: "CB-2026-0421-19", code: "Missing Scan",        amt: 54.50, reason: "DA scanned before EOC. POD shows correct stop.",   daysLeft: 4, status: "ready" },
+    { id: "CB-2026-0421-04", code: "Unsafe Driving",      amt: 125.00, reason: "Netradyne flagged; review shows false positive.",  daysLeft: 6, status: "ready" },
+    { id: "CB-2026-0420-22", code: "Customer Returns",    amt: 89.75, reason: "Address invalid per geo data — not DA error.",     daysLeft: 3, status: "review" },
+    { id: "CB-2026-0419-11", code: "POD Quality",         amt: 47.00, reason: "Photo timestamp confirms delivery.",                daysLeft: 2, status: "ready" },
+    { id: "CB-2026-0418-07", code: "Late Delivery",       amt: 142.50, reason: "Traffic incident, dispatched rescue at 18:42.",   daysLeft: 1, status: "urgent" },
+    { id: "CB-2026-0417-15", code: "Missing Scan",        amt: 68.25, reason: "Scanner offline mid-route; manual override logged.",daysLeft: 5, status: "ready" },
+    { id: "CB-2026-0421-02", code: "Wrong Address",       amt: 78.00, reason: "DA followed Cortex routing; address auto-corrected.",daysLeft: 7, status: "review" },
+  ],
+  scorecard: {
+    tier: "Great",
+    week: "Wk 17 of 2026",
+    metrics: [
+      { name: "Delivered On Time / Compliant",   target: ">98.0%",  current: 98.7, delta:  +0.3, status: "fantastic" },
+      { name: "Photo-On-Delivery (POD)",         target: ">98.5%",  current: 99.2, delta:  +0.1, status: "fantastic" },
+      { name: "Customer Delivery Feedback",      target: ">82%",    current: 79.4, delta:  -1.8, status: "great",    bottleneck: true },
+      { name: "Mentor (FICO) score",             target: ">800",    current: 794,  delta:  -6,   status: "great",    bottleneck: true },
+      { name: "Engine Off Compliance (EOC)",     target: ">96%",    current: 97.8, delta:  +0.4, status: "fantastic" },
+      { name: "Proper Parking Sequence (PPS)",   target: ">95%",    current: 95.4, delta:  -0.2, status: "great" },
+      { name: "Speeding Event Rate",             target: "<10/wk",  current: 6,    delta:  -2,   status: "fantastic" },
+      { name: "Distractions / Followings",       target: "<8/wk",   current: 12,   delta:  +3,   status: "fair",     bottleneck: true },
+    ],
+  },
+  feed: [
+    { t: "06:42",  type: "copper", body: "<b>OT alert:</b> 3 drivers projected over 9.0h today (Rivera, Khanna, Mitchell). Recommend rescue staffing." },
+    { t: "06:18",  type: "green",  body: "<b>Settlement landed</b> · Wk 16 · $56,340 gross. <b>$617</b> in chargebacks flagged for review." },
+    { t: "05:55",  type: "copper", body: "<b>VAN-23</b> fuel anomaly: $56.20 today, MPG 9.8. Last 4 days trending 22% above fleet avg." },
+    { t: "05:32",  type: "copper", body: "<b>Customer Feedback</b> dropped to 79.4% (target 82%). One bad week from <b>Fantastic</b> drop." },
+    { t: "Yest.",  type: "green",  body: "<b>Disputed</b> CB-2026-0418-09 · $112.50 recovered (Late Delivery, traffic-related)." },
+    { t: "Yest.",  type: "muted",  body: "Insurance renewal in 23 days · 3 quotes received via Lockton. Avg savings: <b>$11.4K/yr</b>." },
+  ],
+};
+
+/* =====================================================================
+   ICONS
+   ===================================================================== */
+const icons = {
+  trend: '<svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.7"><polyline points="3 17 9 11 13 15 21 7"/><polyline points="14 7 21 7 21 14"/></svg>',
+  dollar: '<svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.7"><line x1="12" y1="2" x2="12" y2="22"/><path d="M17 5H9.5a3.5 3.5 0 0 0 0 7h5a3.5 3.5 0 0 1 0 7H6"/></svg>',
+  clock: '<svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.7"><circle cx="12" cy="12" r="10"/><polyline points="12 6 12 12 16 14"/></svg>',
+  truck: '<svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.7"><rect x="1" y="3" width="15" height="13"/><polygon points="16 8 20 8 23 11 23 16 16 16 16 8"/><circle cx="5.5" cy="18.5" r="2.5"/><circle cx="18.5" cy="18.5" r="2.5"/></svg>',
+};
+
+/* =====================================================================
+   HELPERS — chart primitives
+   ===================================================================== */
+function fmt(n) { return n >= 1000 ? "$" + (n/1000).toFixed(1) + "K" : "$" + n.toFixed(0); }
+function fmtFull(n) { return "$" + n.toLocaleString("en-US", { maximumFractionDigits: 0 }); }
+function pct(n) { return (n * 100).toFixed(1) + "%"; }
+
+function sparkline(values, w = 100, h = 26, color = "var(--copper)") {
+  const min = Math.min(...values), max = Math.max(...values);
+  const range = max - min || 1;
+  const sx = w / (values.length - 1);
+  const points = values.map((v, i) => `${(i * sx).toFixed(1)},${(h - ((v - min) / range) * h).toFixed(1)}`).join(" ");
+  const lastX = (values.length - 1) * sx, lastY = h - ((values[values.length-1] - min) / range) * h;
+  return `<svg viewBox="0 0 ${w} ${h+2}" width="100%" height="${h+2}" preserveAspectRatio="none">
+    <defs><linearGradient id="sg" x1="0" x2="0" y1="0" y2="1"><stop offset="0%" stop-color="${color}" stop-opacity="0.4"/><stop offset="100%" stop-color="${color}" stop-opacity="0"/></linearGradient></defs>
+    <polyline points="0,${h} ${points} ${w},${h}" fill="url(#sg)" stroke="none"/>
+    <polyline points="${points}" fill="none" stroke="${color}" stroke-width="1.4"/>
+    <circle cx="${lastX}" cy="${lastY}" r="2.4" fill="${color}"/>
+  </svg>`;
+}
+
+function multiSpark(seriesA, seriesB, w = 600, h = 180) {
+  const all = [...seriesA, ...seriesB];
+  const min = Math.min(...all) * 0.95, max = Math.max(...all) * 1.05;
+  const range = max - min || 1;
+  const sx = w / (seriesA.length - 1);
+  const pts = (s) => s.map((v,i) => `${(i*sx).toFixed(1)},${(h - ((v-min)/range)*h).toFixed(1)}`).join(" ");
+  return `<svg viewBox="0 0 ${w} ${h+30}" width="100%" preserveAspectRatio="none">
+    <defs>
+      <linearGradient id="rev" x1="0" x2="0" y1="0" y2="1"><stop offset="0%" stop-color="#D97706" stop-opacity="0.3"/><stop offset="100%" stop-color="#D97706" stop-opacity="0"/></linearGradient>
+    </defs>
+    ${[0.25,0.5,0.75].map(p=>`<line x1="0" x2="${w}" y1="${(h*p).toFixed(0)}" y2="${(h*p).toFixed(0)}" stroke="var(--hair-soft)" stroke-width="0.5" stroke-dasharray="2 4"/>`).join("")}
+    <polyline points="0,${h} ${pts(seriesA)} ${w},${h}" fill="url(#rev)" stroke="none"/>
+    <polyline points="${pts(seriesA)}" fill="none" stroke="#D97706" stroke-width="1.8"/>
+    <polyline points="${pts(seriesB)}" fill="none" stroke="#7A88AB" stroke-width="1.4" stroke-dasharray="3 3"/>
+    ${seriesA.map((v,i) => `<circle cx="${(i*sx).toFixed(1)}" cy="${(h - ((v-min)/range)*h).toFixed(1)}" r="2.5" fill="#D97706"/>`).join("")}
+    ${STATE.monthlyPL.months.map((m,i) => `<text x="${(i*sx).toFixed(0)}" y="${h+18}" fill="var(--muted)" font-size="9" font-family="Inter Tight" text-anchor="middle" letter-spacing="0.1em">${m.toUpperCase()}</text>`).join("")}
+  </svg>`;
+}
+
+function donut(items, size = 140) {
+  const total = items.reduce((s,i) => s + i.pct, 0);
+  let acc = 0;
+  const r = size/2 - 14, cx = size/2, cy = size/2, c = 2 * Math.PI * r;
+  const segs = items.map(it => {
+    const len = (it.pct/total) * c;
+    const off = -acc;
+    acc += len;
+    const dash = `${len.toFixed(2)} ${(c - len).toFixed(2)}`;
+    return `<circle cx="${cx}" cy="${cy}" r="${r}" fill="none" stroke="${it.color}" stroke-width="14" stroke-dasharray="${dash}" stroke-dashoffset="${off}" transform="rotate(-90 ${cx} ${cy})"/>`;
+  }).join("");
+  return `<svg viewBox="0 0 ${size} ${size}" width="${size}" height="${size}">${segs}
+    <text x="${cx}" y="${cy-2}" text-anchor="middle" fill="var(--ink)" font-family="Fraunces" font-size="22" font-weight="600">${total.toFixed(0)}%</text>
+    <text x="${cx}" y="${cy+14}" text-anchor="middle" fill="var(--muted)" font-family="Inter Tight" font-size="9" letter-spacing="0.18em">OF REVENUE</text>
+  </svg>`;
+}
+
+function bars(values, labels, w = 600, h = 180, color = "#D97706") {
+  const max = Math.max(...values) * 1.15;
+  const bw = w / values.length * 0.6;
+  const gap = w / values.length * 0.4;
+  return `<svg viewBox="0 0 ${w} ${h+30}" width="100%" preserveAspectRatio="none">
+    ${values.map((v, i) => {
+      const bh = (v / max) * h;
+      const x = i * (bw + gap) + gap/2;
+      const y = h - bh;
+      return `
+        <rect x="${x}" y="${y}" width="${bw}" height="${bh}" fill="${color}" opacity="0.9"/>
+        <rect x="${x}" y="${y}" width="${bw}" height="3" fill="${color}"/>
+        <text x="${x + bw/2}" y="${y - 6}" text-anchor="middle" fill="var(--ink)" font-family="JetBrains Mono" font-size="10" font-weight="500">${(v/1000).toFixed(0)}K</text>
+        <text x="${x + bw/2}" y="${h+18}" text-anchor="middle" fill="var(--muted)" font-family="Inter Tight" font-size="9" letter-spacing="0.1em">${labels[i].toUpperCase()}</text>
+      `;
+    }).join("")}
+  </svg>`;
+}
+
+/* =====================================================================
+   VIEWS
+   ===================================================================== */
+
+function viewDashboard() {
+  const tb = STATE;
+  return `
+  <div class="alert-bar">
+    <div class="siren"></div>
+    <div class="copy"><b>3 drivers</b> projected to cross <b>9.0h</b> today.  Estimated overtime exposure: <b>$184</b>.  Rescue available on standby route CX-241.</div>
+    <span class="btn-line">REVIEW &rarr;</span>
+  </div>
+
+  <div class="grid g-12">
+    <!-- KPI ROW -->
+    <div class="card col-3 kpi">
+      <div class="label"><span style="color:var(--copper-2)">●</span> REVENUE TODAY</div>
+      <div class="v">$8,427</div>
+      <div class="delta up"><span class="arr">▲</span> $312 vs same wkday avg (+3.8%)</div>
+      <div class="sparkbox">${sparkline(STATE.trend.slice(-12), 200, 26)}</div>
+    </div>
+    <div class="card col-3 kpi">
+      <div class="label"><span style="color:var(--green)">●</span> MARGIN MTD</div>
+      <div class="v green">11.4%</div>
+      <div class="delta up"><span class="arr">▲</span> 1.8 pts vs prior month</div>
+      <div class="sparkbox">${sparkline([8.1,8.4,9.2,9.0,9.5,10.1,10.4,10.8,10.9,11.2,11.4,11.4], 200, 26, "#34D399")}</div>
+    </div>
+    <div class="card col-3 kpi">
+      <div class="label"><span style="color:var(--amber)">●</span> HOURS-TO-BUDGET</div>
+      <div class="v amber">1.04×</div>
+      <div class="delta down"><span class="arr">▲</span> 4% over compensated hours</div>
+      <div class="sparkbox">${sparkline(STATE.laborTrend, 200, 26, "#FBBF24")}</div>
+    </div>
+    <div class="card col-3 kpi">
+      <div class="label"><span style="color:var(--copper-2)">●</span> $ AT RISK (DISPUTES)</div>
+      <div class="v">$617</div>
+      <div class="delta up"><span class="arr">▲</span> 7 chargebacks · 1 urgent</div>
+      <div class="sparkbox">${sparkline([2,1,3,4,2,5,3,4,6,4,7,7], 200, 26, "#D97706")}</div>
+    </div>
+
+    <!-- WEEK CHART -->
+    <div class="card col-8">
+      <div class="card-hd">
+        <span style="color:var(--copper-2);">●</span>
+        <h3>Revenue vs Cost — last 6 months</h3>
+        <span class="label">SETTLEMENT-RECONCILED</span>
+      </div>
+      <div class="card-bd">
+        ${multiSpark(STATE.monthlyPL.revenue, STATE.monthlyPL.cost, 600, 180)}
+        <div style="display:flex; gap:24px; margin-top: 14px; font-size:11px;">
+          <span><span style="display:inline-block;width:14px;height:2px;background:#D97706;vertical-align:middle;margin-right:6px"></span>Revenue · <b>${fmtFull(STATE.monthlyPL.revenue.at(-1))}</b></span>
+          <span><span style="display:inline-block;width:14px;height:1px;border-top:1px dashed #7A88AB;vertical-align:middle;margin-right:6px"></span>Cost · <b style="color:var(--body)">${fmtFull(STATE.monthlyPL.cost.at(-1))}</b></span>
+          <span style="margin-left:auto" class="small">6-mo trend: revenue +21%, cost +14%, margin expanded <b style="color:var(--green)">3.4 pts</b></span>
+        </div>
+      </div>
+    </div>
+
+    <!-- ACTIVITY FEED -->
+    <div class="card col-4">
+      <div class="card-hd">
+        <span style="color:var(--copper-2);">●</span>
+        <h3>This morning</h3>
+        <span class="label">LIVE</span>
+      </div>
+      <div class="card-bd" style="padding-top:6px">
+        ${STATE.feed.map(f => `
+          <div class="feed-item">
+            <div class="feed-dot ${f.type}"></div>
+            <div class="feed-body">${f.body}</div>
+            <div class="feed-time">${f.t}</div>
+          </div>
+        `).join("")}
+      </div>
+    </div>
+
+    <!-- COST MIX -->
+    <div class="card col-5">
+      <div class="card-hd">
+        <span style="color:var(--copper-2);">●</span>
+        <h3>Where the money goes</h3>
+        <span class="label">MTD COST MIX</span>
+      </div>
+      <div class="card-bd" style="display:flex; gap:24px; align-items:center;">
+        <div style="flex-shrink:0">${donut(STATE.costMix, 150)}</div>
+        <div style="flex:1">
+          ${STATE.costMix.map(c => `
+            <div style="display:grid; grid-template-columns: 12px 1fr auto auto; gap:10px; align-items:center; padding:6px 0; font-size:12px;">
+              <div style="width:10px;height:10px;background:${c.color};border-radius:1px"></div>
+              <div>${c.lbl}</div>
+              <div class="mono" style="color:var(--muted)">${c.pct}%</div>
+              <div class="mono" style="font-weight:600">${fmtFull(c.val)}</div>
+            </div>
+          `).join("")}
+        </div>
+      </div>
+    </div>
+
+    <!-- SCORECARD MINI -->
+    <div class="card col-7">
+      <div class="card-hd">
+        <span style="color:var(--copper-2);">●</span>
+        <h3>Scorecard outlook · Wk 17</h3>
+        <span class="pill pill-amber"><span class="dot"></span>GREAT</span>
+        <span class="label" style="margin-left:0">1 BAD WEEK FROM A TIER DROP</span>
+      </div>
+      <div class="card-bd">
+        <div style="display:flex; align-items:center; gap:18px; margin-bottom: 6px;">
+          <div style="font-family:'Fraunces',serif;font-size:32px;font-weight:600;line-height:1">Great</div>
+          <div style="flex:1">
+            <div class="meter">
+              <div class="seg-poor"></div>
+              <div class="seg-fair"></div>
+              <div class="seg-great"></div>
+              <div class="seg-fantastic"></div>
+              <div class="seg-fantastic-plus"></div>
+              <div class="meter-marker" style="left:54%"></div>
+            </div>
+            <div class="meter-labels">
+              <span>Poor</span><span>Fair</span><span>Great</span><span>Fantastic</span><span>Fant+</span>
+            </div>
+          </div>
+        </div>
+        <div style="display:grid; grid-template-columns: 1fr 1fr; gap: 14px; margin-top: 18px">
+          <div style="padding:12px 14px; background:rgba(248,113,113,0.08); border:1px solid rgba(248,113,113,0.25); border-radius:2px;">
+            <div class="kicker" style="color:var(--red)">BIGGEST DRAG</div>
+            <div style="font-family:'Fraunces',serif;font-size:15px;font-weight:600;margin-top:4px">Distractions / Followings</div>
+            <div class="small" style="margin-top:2px">12 events this wk (target &lt;8) · costs ~<b style="color:var(--red)">$3,800</b>/wk in lost incentive</div>
+          </div>
+          <div style="padding:12px 14px; background:rgba(52,211,153,0.06); border:1px solid rgba(52,211,153,0.25); border-radius:2px;">
+            <div class="kicker" style="color:var(--green)">UPSIDE LEVER</div>
+            <div style="font-family:'Fraunces',serif;font-size:15px;font-weight:600;margin-top:4px">Customer Feedback</div>
+            <div class="small" style="margin-top:2px">79.4% → 82% target.  +2.6 pts unlocks <b style="color:var(--green)">$8,000/wk</b> in Fantastic incentive.</div>
+          </div>
+        </div>
+      </div>
+    </div>
+
+    <!-- TOP FLEET ALERT -->
+    <div class="card col-6">
+      <div class="card-hd">
+        <span style="color:var(--copper-2);">●</span>
+        <h3>Fleet attention</h3>
+        <span class="label">3 NEED ACTION</span>
+      </div>
+      <div class="card-bd" style="padding-top:4px">
+        <div class="list-row">
+          <div>
+            <div class="name">VAN-23 · CX-209</div>
+            <div class="small">Fuel anomaly: $56.20 today · MPG 9.8 · 4-day trend +22%</div>
+          </div>
+          <span class="pill pill-red"><span class="dot"></span>FUEL ANOMALY</span>
+          <span class="btn-line" style="color:var(--copper-2);font-weight:600;font-size:10px;letter-spacing:.1em">INVESTIGATE</span>
+        </div>
+        <div class="list-row">
+          <div>
+            <div class="name">VAN-14 · CX-127</div>
+            <div class="small">PM due in 2 days · 32K miles since last service</div>
+          </div>
+          <span class="pill pill-amber"><span class="dot"></span>PM DUE</span>
+          <span class="btn-line" style="color:var(--copper-2);font-weight:600;font-size:10px;letter-spacing:.1em">SCHEDULE</span>
+        </div>
+        <div class="list-row">
+          <div>
+            <div class="name">VAN-12 · CX-118</div>
+            <div class="small">Cost-per-mile $0.94 (fleet avg $0.83) · 13% over</div>
+          </div>
+          <span class="pill pill-amber"><span class="dot"></span>CPM HIGH</span>
+          <span class="btn-line" style="color:var(--copper-2);font-weight:600;font-size:10px;letter-spacing:.1em">REVIEW</span>
+        </div>
+      </div>
+    </div>
+
+    <!-- TOP DRIVERS -->
+    <div class="card col-6">
+      <div class="card-hd">
+        <span style="color:var(--copper-2);">●</span>
+        <h3>Driver retention watch</h3>
+        <span class="label">90-DAY CHURN MODEL</span>
+      </div>
+      <div class="card-bd" style="padding-top:4px">
+        <div class="list-row">
+          <div style="display:flex;gap:10px;align-items:center">
+            <div class="avatar">TB</div>
+            <div>
+              <div class="name">Tyrone Banks</div>
+              <div class="small">CX-202 · 4 mo tenure · FICO 698 · ↘ trending</div>
+            </div>
+          </div>
+          <span class="pill pill-red"><span class="dot"></span>HIGH RISK</span>
+          <span class="btn-line" style="color:var(--copper-2);font-weight:600;font-size:10px;letter-spacing:.1em">COACH</span>
+        </div>
+        <div class="list-row">
+          <div style="display:flex;gap:10px;align-items:center">
+            <div class="avatar">DM</div>
+            <div>
+              <div class="name">Devon Mitchell</div>
+              <div class="small">CX-209 · 7 mo · 4 weeks of OT in a row</div>
+            </div>
+          </div>
+          <span class="pill pill-amber"><span class="dot"></span>MED RISK</span>
+          <span class="btn-line" style="color:var(--copper-2);font-weight:600;font-size:10px;letter-spacing:.1em">REBALANCE</span>
+        </div>
+        <div class="list-row">
+          <div style="display:flex;gap:10px;align-items:center">
+            <div class="avatar">CF</div>
+            <div>
+              <div class="name">Caleb Foster</div>
+              <div class="small">CX-127 · 9 mo · attendance dipped wk-over-wk</div>
+            </div>
+          </div>
+          <span class="pill pill-amber"><span class="dot"></span>MED RISK</span>
+          <span class="btn-line" style="color:var(--copper-2);font-weight:600;font-size:10px;letter-spacing:.1em">CHECK-IN</span>
+        </div>
+      </div>
+    </div>
+  </div>
+  `;
+}
+
+function viewFinancial() {
+  return `
+  <div class="section-head">
+    <div><span class="kicker">Module · Financial Truth</span><h2>Live P&L</h2></div>
+    <div style="display:flex;gap:8px;">
+      <button class="btn">EXPORT</button>
+      <button class="btn btn-primary">CLOSE WK 17</button>
+    </div>
+  </div>
+
+  <div class="grid g-12">
+    <div class="card col-3 kpi"><div class="label">WK REVENUE</div><div class="v">$56,340</div><div class="delta up"><span class="arr">▲</span> 4.2% wk/wk</div></div>
+    <div class="card col-3 kpi"><div class="label">WK COST</div><div class="v">$49,916</div><div class="delta down"><span class="arr">▲</span> 2.1% wk/wk</div></div>
+    <div class="card col-3 kpi"><div class="label">WK MARGIN</div><div class="v green">$6,424</div><div class="delta up"><span class="arr">▲</span> +$847 vs prior</div></div>
+    <div class="card col-3 kpi"><div class="label">MARGIN %</div><div class="v green">11.4%</div><div class="delta up"><span class="arr">▲</span> +1.4 pts</div></div>
+
+    <div class="card col-7">
+      <div class="card-hd"><h3>Settlement breakdown · Wk 16</h3><span class="label">PER-COMPONENT</span></div>
+      <div class="card-bd" style="padding-top:8px">
+        <table>
+          <thead><tr><th>Component</th><th class="num">This week</th><th class="num">Last week</th><th class="num">Δ</th><th>Trend</th></tr></thead>
+          <tbody>
+            <tr><td>Base rate (per route)</td><td class="num">$22,500</td><td class="num">$22,500</td><td class="num" style="color:var(--muted)">—</td><td><span class="pill pill-dim"><span class="dot"></span>FLAT</span></td></tr>
+            <tr><td>Variable per-package</td><td class="num">$24,180</td><td class="num">$23,016</td><td class="num" style="color:var(--green)">+$1,164</td><td><span class="pill pill-green"><span class="dot"></span>UP 5.1%</span></td></tr>
+            <tr><td>Performance incentive (Great)</td><td class="num">$5,180</td><td class="num">$5,180</td><td class="num" style="color:var(--muted)">—</td><td><span class="pill pill-amber"><span class="dot"></span>1 BAND TO Fantastic</span></td></tr>
+            <tr><td>Fuel reimbursement</td><td class="num">$4,930</td><td class="num">$4,640</td><td class="num" style="color:var(--green)">+$290</td><td><span class="pill pill-green"><span class="dot"></span>UP</span></td></tr>
+            <tr><td>Chargebacks (gross)</td><td class="num" style="color:var(--red)">−$617</td><td class="num" style="color:var(--red)">−$724</td><td class="num" style="color:var(--green)">+$107</td><td><span class="pill pill-amber"><span class="dot"></span>7 OPEN</span></td></tr>
+            <tr><td>Other adjustments</td><td class="num">$167</td><td class="num">$50</td><td class="num" style="color:var(--green)">+$117</td><td><span class="pill pill-dim"><span class="dot"></span>—</span></td></tr>
+            <tr style="font-weight:600"><td>Net settlement</td><td class="num">$56,340</td><td class="num">$54,062</td><td class="num" style="color:var(--green)">+$2,278</td><td></td></tr>
+          </tbody>
+        </table>
+      </div>
+    </div>
+
+    <div class="card col-5">
+      <div class="card-hd"><h3>Revenue · last 6 mo</h3><span class="label">MONTHLY CLOSE</span></div>
+      <div class="card-bd">${bars(STATE.monthlyPL.revenue, STATE.monthlyPL.months, 500, 180)}</div>
+    </div>
+
+    <div class="card col-12">
+      <div class="card-hd"><h3>Per-route P&L · this week</h3><span class="label">TOP & BOTTOM 5</span></div>
+      <div class="card-bd" style="padding-top:6px">
+        <table>
+          <thead><tr><th>Route</th><th>Driver</th><th class="num">Revenue</th><th class="num">Cost</th><th class="num">Margin $</th><th class="num">Margin %</th><th>Distribution</th></tr></thead>
+          <tbody>
+            ${[
+              { r:"CX-115", d:"Sofia Hernandez",  rev: 2415, cost: 1968, m: 447, mp: 18.5 },
+              { r:"CX-113", d:"Maya Sandoval",    rev: 2380, cost: 1962, m: 418, mp: 17.6 },
+              { r:"CX-110", d:"Priya Vasquez",    rev: 2305, cost: 1990, m: 315, mp: 13.7 },
+              { r:"CX-202", d:"Tyrone Banks",     rev: 2220, cost: 1985, m: 235, mp: 10.6 },
+              { r:"CX-104", d:"Marcus Rivera",    rev: 2390, cost: 2210, m: 180, mp:  7.5 },
+              { r:"CX-118", d:"Anjali Khanna",    rev: 2470, cost: 2331, m: 139, mp:  5.6 },
+              { r:"CX-209", d:"Devon Mitchell",   rev: 2280, cost: 2245, m:  35, mp:  1.5 },
+            ].map(r => `
+              <tr>
+                <td class="mono">${r.r}</td>
+                <td>${r.d}</td>
+                <td class="num">${fmtFull(r.rev)}</td>
+                <td class="num">${fmtFull(r.cost)}</td>
+                <td class="num" style="color:${r.m > 200 ? 'var(--green)' : r.m > 100 ? 'var(--amber)' : 'var(--red)'}">${fmtFull(r.m)}</td>
+                <td class="num" style="color:${r.mp > 12 ? 'var(--green)' : r.mp > 5 ? 'var(--amber)' : 'var(--red)'}">${r.mp.toFixed(1)}%</td>
+                <td><div class="mbar"><div class="${r.mp > 12 ? 'green' : r.mp > 5 ? 'amber' : 'red'}" style="width:${Math.min(100, r.mp*5)}%"></div></div></td>
+              </tr>
+            `).join("")}
+          </tbody>
+        </table>
+      </div>
+    </div>
+  </div>
+  `;
+}
+
+function viewLabor() {
+  return `
+  <div class="section-head">
+    <div><span class="kicker">Module · Labor Engine</span><h2>Hours-to-Budget · today</h2></div>
+    <div style="display:flex;gap:8px"><button class="btn">RESCUE PLAN</button><button class="btn btn-primary">ADJUST ROSTER</button></div>
+  </div>
+
+  <div class="alert-bar">
+    <div class="siren"></div>
+    <div class="copy">Projected daily ratio <b>1.04×</b> compensated hours.  3 drivers will cross 9.0h.  Cumulative OT exposure: <b>$184 today</b>, ~<b>$960/wk</b> if pattern holds.</div>
+    <span class="btn-line">SUGGEST RESCUE PLAN &rarr;</span>
+  </div>
+
+  <div class="grid g-12">
+    <div class="card col-3 kpi"><div class="label">SCHEDULED HOURS</div><div class="v">456</div><div class="sub">52 DAs assigned · 0 callouts</div></div>
+    <div class="card col-3 kpi"><div class="label">COMPENSATED (AMZ)</div><div class="v">438</div><div class="sub">Per route plan</div></div>
+    <div class="card col-3 kpi"><div class="label">PROJECTED ACTUAL</div><div class="v amber">456</div><div class="delta down"><span class="arr">▲</span> 18h above compensated</div></div>
+    <div class="card col-3 kpi"><div class="label">OT EXPOSURE</div><div class="v red">$184</div><div class="sub">Today · ~$960/wk pattern</div></div>
+
+    <div class="card col-12">
+      <div class="card-hd"><h3>Driver punches vs route plan</h3><span class="label">CORTEX × ADP RECONCILED</span></div>
+      <div class="card-bd" style="padding-top:6px">
+        <table>
+          <thead><tr><th>Driver</th><th>Route</th><th class="num">Sched</th><th class="num">Projected</th><th class="num">Δ</th><th class="num">FICO</th><th>Risk today</th><th>Action</th></tr></thead>
+          <tbody>
+          ${STATE.drivers.map(d => `
+            <tr>
+              <td><div style="display:flex;align-items:center;gap:10px"><div class="avatar">${d.name.split(" ").map(n=>n[0]).join("")}</div><div><div class="name">${d.name}</div><div class="small">${d.tenureMo} mo · scoreΔ ${d.scoreImpact}</div></div></div></td>
+              <td class="mono">${d.route}</td>
+              <td class="num">8.5h</td>
+              <td class="num" style="color:${d.h > 9 ? 'var(--amber)' : 'var(--ink)'}">${d.h.toFixed(1)}h</td>
+              <td class="num" style="color:${d.ot > 0 ? 'var(--red)' : 'var(--muted)'}">${d.ot > 0 ? '+' + d.ot.toFixed(1) + 'h' : '—'}</td>
+              <td class="num" style="color:${d.fico > 800 ? 'var(--green)' : d.fico > 750 ? 'var(--amber)' : 'var(--red)'}">${d.fico}</td>
+              <td>${d.status === 'ot'
+                ? '<span class="pill pill-red"><span class="dot"></span>OT TODAY</span>'
+                : '<span class="pill pill-green"><span class="dot"></span>ON BUDGET</span>'}
+              </td>
+              <td><span class="btn-line" style="color:var(--copper-2);font-weight:600;font-size:10px;letter-spacing:.1em">${d.status === 'ot' ? 'RESCUE' : 'VIEW'}</span></td>
+            </tr>
+          `).join("")}
+          </tbody>
+        </table>
+      </div>
+    </div>
+
+    <div class="card col-6">
+      <div class="card-hd"><h3>Hours-to-Budget · trailing 12 days</h3><span class="label">DAILY RATIO</span></div>
+      <div class="card-bd">${sparkline(STATE.laborTrend, 600, 120, "#FBBF24")}
+      <div class="small" style="margin-top:8px">Target ratio: <b>1.00×</b>.  Current trailing avg: <b>1.02×</b>.  3 of last 12 days above 1.05×.</div>
+      </div>
+    </div>
+
+    <div class="card col-6">
+      <div class="card-hd"><h3>Recommended actions</h3><span class="label">AUTO-GENERATED</span></div>
+      <div class="card-bd" style="padding-top:8px">
+        <div class="feed-item">
+          <div class="feed-dot copper"></div>
+          <div class="feed-body"><b>Dispatch standby DA</b> Garcia to assist Mitchell at 16:30 stop. Saves ~1.4h OT, est. <b style="color:var(--green)">+$72</b> today.</div>
+          <div class="feed-time">REC #1</div>
+        </div>
+        <div class="feed-item">
+          <div class="feed-dot copper"></div>
+          <div class="feed-body"><b>Reroute 8 stops</b> from CX-118 (Khanna) to CX-241 (open). Saves 0.9h on Khanna's day, <b style="color:var(--green)">+$46</b>.</div>
+          <div class="feed-time">REC #2</div>
+        </div>
+        <div class="feed-item">
+          <div class="feed-dot muted"></div>
+          <div class="feed-body"><b>Coaching nudge</b> Rivera & Khanna trending OT 4 wks in row → flag for ride-along to identify pattern.</div>
+          <div class="feed-time">REC #3</div>
+        </div>
+      </div>
+    </div>
+  </div>
+  `;
+}
+
+function viewDrivers() {
+  return `
+  <div class="section-head">
+    <div><span class="kicker">Module · Driver Hub</span><h2>Roster · 52 active</h2></div>
+    <div style="display:flex;gap:8px"><button class="btn">EXPORT</button><button class="btn btn-primary">+ HIRE</button></div>
+  </div>
+
+  <div class="grid g-12">
+    <div class="card col-3 kpi"><div class="label">ACTIVE DAs</div><div class="v">52</div><div class="sub">25 routes + standbys</div></div>
+    <div class="card col-3 kpi"><div class="label">90-DAY CHURN</div><div class="v amber">14%</div><div class="delta up" style="color:var(--green)"><span class="arr">▼</span> down from 22% (industry: 22% / 90d)</div></div>
+    <div class="card col-3 kpi"><div class="label">AVG FICO (MENTOR)</div><div class="v green">794</div><div class="delta up"><span class="arr">▲</span> +12 vs last quarter</div></div>
+    <div class="card col-3 kpi"><div class="label">REPLACEMENT $ AVOIDED</div><div class="v green">$24K</div><div class="sub">YTD vs prior-year baseline</div></div>
+
+    <div class="card col-12">
+      <div class="card-hd"><h3>Driver roster · churn-risk sorted</h3><span class="label">PREDICTIVE MODEL</span></div>
+      <div class="card-bd" style="padding-top:6px">
+        <table>
+          <thead><tr><th>Driver</th><th>Route</th><th class="num">Tenure</th><th class="num">FICO</th><th class="num">Score impact</th><th>Churn risk</th><th>Last coaching</th><th>Action</th></tr></thead>
+          <tbody>
+          ${STATE.drivers.map(d => `
+            <tr>
+              <td><div style="display:flex;align-items:center;gap:10px"><div class="avatar">${d.name.split(" ").map(n=>n[0]).join("")}</div><span class="name">${d.name}</span></div></td>
+              <td class="mono">${d.route}</td>
+              <td class="num">${d.tenureMo} mo</td>
+              <td class="num" style="color:${d.fico > 800 ? 'var(--green)' : d.fico > 750 ? 'var(--amber)' : 'var(--red)'}">${d.fico}</td>
+              <td class="num" style="color:${d.scoreImpact.startsWith('+') ? 'var(--green)' : d.scoreImpact === '0.0' ? 'var(--muted)' : 'var(--red)'}">${d.scoreImpact}</td>
+              <td>${d.churnRisk === 'high'
+                ? '<span class="pill pill-red"><span class="dot"></span>HIGH</span>'
+                : d.churnRisk === 'med'
+                ? '<span class="pill pill-amber"><span class="dot"></span>MEDIUM</span>'
+                : '<span class="pill pill-green"><span class="dot"></span>LOW</span>'}
+              </td>
+              <td class="small">${d.churnRisk === 'high' ? '11 days ago' : d.churnRisk === 'med' ? '4 days ago' : '< 7 days'}</td>
+              <td><span class="btn-line" style="color:var(--copper-2);font-weight:600;font-size:10px;letter-spacing:.1em">${d.churnRisk === 'high' ? 'COACH NOW' : 'OPEN'}</span></td>
+            </tr>
+          `).join("")}
+          </tbody>
+        </table>
+      </div>
+    </div>
+
+    <div class="card col-6">
+      <div class="card-hd"><h3>Why drivers leave</h3><span class="label">EXIT INTERVIEW PATTERN</span></div>
+      <div class="card-bd">
+        ${[
+          { r: "Compensation / hours", n: 38, c: "var(--copper)" },
+          { r: "Schedule unpredictability", n: 24, c: "var(--copper-2)" },
+          { r: "Vehicle / equipment issues", n: 14, c: "var(--amber)" },
+          { r: "Coaching style", n: 12, c: "var(--muted)" },
+          { r: "Other / personal", n: 12, c: "var(--dim)" },
+        ].map(x => `
+          <div style="margin-bottom:12px">
+            <div style="display:flex;justify-content:space-between;font-size:11px;margin-bottom:4px"><span>${x.r}</span><span class="mono">${x.n}%</span></div>
+            <div class="mbar" style="height:6px"><div style="width:${x.n*2.5}%;background:${x.c}"></div></div>
+          </div>
+        `).join("")}
+        <div class="small" style="margin-top:14px"><b>Insight:</b>  62% of departures cite hours / schedule.  Operator's Hours-to-Budget engine directly addresses both.</div>
+      </div>
+    </div>
+
+    <div class="card col-6">
+      <div class="card-hd"><h3>Cost-of-churn ledger</h3><span class="label">YTD</span></div>
+      <div class="card-bd">
+        <div style="display:grid;grid-template-columns:1fr auto;gap:8px;padding:6px 0;border-bottom:1px solid var(--hair-soft)"><div>DAs hired YTD</div><div class="mono" style="font-weight:600">14</div></div>
+        <div style="display:grid;grid-template-columns:1fr auto;gap:8px;padding:6px 0;border-bottom:1px solid var(--hair-soft)"><div>DAs separated</div><div class="mono" style="font-weight:600">7</div></div>
+        <div style="display:grid;grid-template-columns:1fr auto;gap:8px;padding:6px 0;border-bottom:1px solid var(--hair-soft)"><div>Avg replacement cost / DA</div><div class="mono" style="font-weight:600">$3,800</div></div>
+        <div style="display:grid;grid-template-columns:1fr auto;gap:8px;padding:6px 0;border-bottom:1px solid var(--hair-soft)"><div>Total churn cost YTD</div><div class="mono" style="font-weight:600;color:var(--red)">$26,600</div></div>
+        <div style="display:grid;grid-template-columns:1fr auto;gap:8px;padding:10px 0 6px"><div><b>Saved vs prior-year run-rate</b></div><div class="mono" style="font-weight:600;color:var(--green)">$24,000</div></div>
+      </div>
+    </div>
+  </div>
+  `;
+}
+
+function viewFleet() {
+  return `
+  <div class="section-head">
+    <div><span class="kicker">Module · Fleet Health</span><h2>28 vans · live</h2></div>
+    <div style="display:flex;gap:8px"><button class="btn">PM CALENDAR</button><button class="btn btn-primary">FUEL AUDIT</button></div>
+  </div>
+
+  <div class="grid g-12">
+    <div class="card col-3 kpi"><div class="label">FLEET CPM</div><div class="v">$0.83</div><div class="delta up"><span class="arr">▼</span> $0.04 vs Mar (improving)</div></div>
+    <div class="card col-3 kpi"><div class="label">AVG MPG</div><div class="v">12.8</div><div class="sub">stop-and-go conditions</div></div>
+    <div class="card col-3 kpi"><div class="label">FUEL TODAY</div><div class="v">$1,108</div><div class="delta down"><span class="arr">▲</span> +$56 vs avg (VAN-23)</div></div>
+    <div class="card col-3 kpi"><div class="label">PMs DUE 7D</div><div class="v amber">3</div><div class="sub">VAN-14, VAN-12, VAN-29</div></div>
+
+    <div class="card col-12">
+      <div class="card-hd"><h3>Per-van today</h3><span class="label">LIVE TELEMATICS</span></div>
+      <div class="card-bd" style="padding-top:6px">
+        <table>
+          <thead><tr><th>Van</th><th>Route</th><th class="num">Miles</th><th class="num">CPM</th><th class="num">MPG</th><th class="num">Fuel today</th><th class="num">PM in</th><th>Status</th></tr></thead>
+          <tbody>
+          ${STATE.vans.map(v => `
+            <tr>
+              <td class="mono" style="font-weight:600">${v.id}</td>
+              <td class="mono">${v.route}</td>
+              <td class="num">${v.miles}</td>
+              <td class="num" style="color:${v.cpm > 1.0 ? 'var(--red)' : v.cpm > 0.85 ? 'var(--amber)' : 'var(--green)'}">$${v.cpm.toFixed(2)}</td>
+              <td class="num" style="color:${v.mpg < 11 ? 'var(--red)' : v.mpg < 13 ? 'var(--amber)' : 'var(--green)'}">${v.mpg.toFixed(1)}</td>
+              <td class="num">$${v.fuelToday.toFixed(2)}</td>
+              <td class="num" style="color:${v.pmDays < 5 ? 'var(--red)' : v.pmDays < 14 ? 'var(--amber)' : 'var(--muted)'}">${v.pmDays}d</td>
+              <td>${v.status === 'alert'
+                ? '<span class="pill pill-red"><span class="dot"></span>FUEL ANOMALY</span>'
+                : v.status === 'warn'
+                ? '<span class="pill pill-amber"><span class="dot"></span>WATCH</span>'
+                : '<span class="pill pill-green"><span class="dot"></span>OK</span>'}
+              </td>
+            </tr>
+          `).join("")}
+          </tbody>
+        </table>
+      </div>
+    </div>
+
+    <div class="card col-6">
+      <div class="card-hd"><h3>VAN-23 deep dive</h3><span class="label">FLAGGED FUEL ANOMALY</span></div>
+      <div class="card-bd">
+        <div class="small" style="margin-bottom:14px">VAN-23 has run <b style="color:var(--red)">22% above</b> fleet-average fuel cost for 4 consecutive days. MPG dropped from 13.4 to 9.8. Route mileage is normal. Possible causes:</div>
+        <ul style="margin:0;padding-left:18px;font-size:12px;line-height:1.9;color:var(--body)">
+          <li>Driver behavior (idle time, harsh acceleration) — Netradyne shows 14 events vs fleet avg 4</li>
+          <li>Mechanical drag (brakes, tires, AC) — last PM 31 days ago</li>
+          <li>Fuel-card abuse — purchases at non-fleet stations (2× this week)</li>
+        </ul>
+        <div style="margin-top:14px;padding:12px;background:rgba(248,113,113,0.06);border:1px solid rgba(248,113,113,0.2);border-radius:2px">
+          <div class="kicker" style="color:var(--red)">EST. ANNUALIZED LEAK</div>
+          <div style="font-family:'Fraunces',serif;font-size:24px;font-weight:600;margin-top:4px">$2,840 / yr</div>
+          <div class="small">Single van, untreated. Across fleet, similar patterns add up to <b>$11–18K/yr</b>.</div>
+        </div>
+      </div>
+    </div>
+
+    <div class="card col-6">
+      <div class="card-hd"><h3>Maintenance calendar · next 30 days</h3><span class="label">PM SCHEDULE</span></div>
+      <div class="card-bd" style="padding-top:6px">
+        ${[
+          { v: "VAN-14", t: "Oil + tire rotation", d: 2,  c: "var(--red)" },
+          { v: "VAN-12", t: "Brake inspection", d: 5,  c: "var(--amber)" },
+          { v: "VAN-29", t: "Oil + multi-point", d: 6,  c: "var(--amber)" },
+          { v: "VAN-04", t: "Oil change", d: 18, c: "var(--muted)" },
+          { v: "VAN-22", t: "Oil change", d: 14, c: "var(--muted)" },
+          { v: "VAN-19", t: "Oil + alignment", d: 24, c: "var(--muted)" },
+        ].map(p => `
+          <div class="list-row">
+            <div><span class="mono" style="font-weight:600">${p.v}</span> <span class="small"> · ${p.t}</span></div>
+            <span class="mono" style="color:${p.c};font-weight:600">${p.d}d</span>
+            <span class="btn-line" style="color:var(--copper-2);font-weight:600;font-size:10px;letter-spacing:.1em">SCHEDULE</span>
+          </div>
+        `).join("")}
+      </div>
+    </div>
+  </div>
+  `;
+}
+
+function viewDisputes() {
+  return `
+  <div class="section-head">
+    <div><span class="kicker">Module · Settlement & Disputes</span><h2>7 chargebacks · $617 at risk</h2></div>
+    <div style="display:flex;gap:8px"><button class="btn">EXPORT</button><button class="btn btn-primary">FILE 4 READY</button></div>
+  </div>
+
+  <div class="alert-bar">
+    <div class="siren"></div>
+    <div class="copy"><b>CB-2026-0418-07 ($142.50)</b> dispute window closes in <b>1 day</b>. POD evidence attached. Recommend filing today.</div>
+    <span class="btn-line">FILE NOW &rarr;</span>
+  </div>
+
+  <div class="grid g-12">
+    <div class="card col-3 kpi"><div class="label">OPEN DISPUTES</div><div class="v">7</div><div class="sub">5 within 7-day window</div></div>
+    <div class="card col-3 kpi"><div class="label">$ AT RISK</div><div class="v">$617</div><div class="sub">Across open chargebacks</div></div>
+    <div class="card col-3 kpi"><div class="label">RECOVERED YTD</div><div class="v green">$8,420</div><div class="delta up"><span class="arr">▲</span> 67% win rate (vs 31% baseline)</div></div>
+    <div class="card col-3 kpi"><div class="label">AVG TIME-TO-FILE</div><div class="v">2.1 days</div><div class="sub">Down from 8.4 manual</div></div>
+
+    <div class="card col-12">
+      <div class="card-hd"><h3>Open chargebacks</h3><span class="label">EVIDENCE AUTO-ATTACHED</span></div>
+      <div class="card-bd" style="padding-top:6px">
+        <table>
+          <thead><tr><th>ID</th><th>Code</th><th class="num">Amount</th><th>Reason / evidence</th><th>Window</th><th>Status</th><th>Action</th></tr></thead>
+          <tbody>
+          ${STATE.disputes.map(d => `
+            <tr>
+              <td class="mono">${d.id}</td>
+              <td>${d.code}</td>
+              <td class="num">$${d.amt.toFixed(2)}</td>
+              <td class="small">${d.reason}</td>
+              <td><span class="countdown ${d.daysLeft <= 1 ? 'urgent' : ''}">${d.daysLeft}d ${d.daysLeft === 1 ? 'LEFT' : 'left'}</span></td>
+              <td>${d.status === 'urgent'
+                ? '<span class="pill pill-red"><span class="dot"></span>URGENT</span>'
+                : d.status === 'review'
+                ? '<span class="pill pill-amber"><span class="dot"></span>NEEDS REVIEW</span>'
+                : '<span class="pill pill-green"><span class="dot"></span>READY</span>'}
+              </td>
+              <td><span class="btn-line" style="color:var(--copper-2);font-weight:600;font-size:10px;letter-spacing:.1em">${d.status === 'ready' ? 'FILE' : 'OPEN'}</span></td>
+            </tr>
+          `).join("")}
+          </tbody>
+        </table>
+      </div>
+    </div>
+
+    <div class="card col-6">
+      <div class="card-hd"><h3>Recovery trend</h3><span class="label">LAST 12 WEEKS</span></div>
+      <div class="card-bd">${bars([280, 412, 516, 380, 645, 720, 580, 824, 690, 920, 1140, 1313], ["W6","W7","W8","W9","W10","W11","W12","W13","W14","W15","W16","W17"], 600, 160, "#34D399")}
+      <div class="small" style="margin-top:10px">Cumulative recovered YTD: <b style="color:var(--green)">$8,420</b>.  Pre-Operator baseline: ~<b>$2,640</b> (estimated from 31% file rate).</div>
+      </div>
+    </div>
+
+    <div class="card col-6">
+      <div class="card-hd"><h3>Dispute outcomes by code</h3><span class="label">WIN RATE BY TYPE</span></div>
+      <div class="card-bd">
+        ${[
+          { r: "Missing Scan", w: 84 },
+          { r: "POD Quality", w: 78 },
+          { r: "Unsafe Driving (false +)", w: 71 },
+          { r: "Wrong Address", w: 64 },
+          { r: "Late Delivery", w: 52 },
+          { r: "Customer Returns", w: 38 },
+        ].map(x => `
+          <div style="margin-bottom:10px">
+            <div style="display:flex;justify-content:space-between;font-size:11px;margin-bottom:4px"><span>${x.r}</span><span class="mono" style="color:${x.w > 70 ? 'var(--green)' : x.w > 50 ? 'var(--amber)' : 'var(--red)'}">${x.w}% win</span></div>
+            <div class="mbar"><div class="${x.w > 70 ? 'green' : x.w > 50 ? 'amber' : 'red'}" style="width:${x.w}%"></div></div>
+          </div>
+        `).join("")}
+      </div>
+    </div>
+  </div>
+  `;
+}
+
+function viewScorecard() {
+  const sc = STATE.scorecard;
+  return `
+  <div class="section-head">
+    <div><span class="kicker">Module · Scorecard Optimizer</span><h2>${sc.week} · current tier: ${sc.tier}</h2></div>
+    <div style="display:flex;gap:8px"><button class="btn">HISTORICAL</button><button class="btn btn-primary">COACHING PLAN</button></div>
+  </div>
+
+  <div class="card" style="margin-bottom:18px">
+    <div class="card-bd" style="padding:24px">
+      <div style="display:flex;align-items:center;gap:24px;margin-bottom:6px">
+        <div>
+          <div class="kicker">CURRENT TIER</div>
+          <div style="font-family:'Fraunces',serif;font-size:42px;font-weight:600;line-height:1;color:var(--amber)">Great</div>
+          <div class="small" style="margin-top:6px">Holding pattern · 1 metric from <b style="color:var(--green)">Fantastic</b></div>
+        </div>
+        <div style="flex:1">
+          <div class="meter">
+            <div class="seg-poor"></div>
+            <div class="seg-fair"></div>
+            <div class="seg-great"></div>
+            <div class="seg-fantastic"></div>
+            <div class="seg-fantastic-plus"></div>
+            <div class="meter-marker" style="left:54%"></div>
+          </div>
+          <div class="meter-labels">
+            <span>Poor</span><span>Fair</span><span>Great</span><span>Fantastic</span><span>Fant+</span>
+          </div>
+          <div class="small" style="margin-top:8px;text-align:center">Moving from <b style="color:var(--amber)">Great</b> → <b style="color:var(--green)">Fantastic</b> = <b>+$8,000/wk</b> incentive · ~$416K/yr</div>
+        </div>
+      </div>
+    </div>
+  </div>
+
+  <div class="grid g-12">
+    <div class="card col-12">
+      <div class="card-hd"><h3>Metrics breakdown · Wk 17</h3><span class="label">3 BOTTLENECKS</span></div>
+      <div class="card-bd" style="padding-top:6px">
+        <table>
+          <thead><tr><th>Metric</th><th class="num">Target</th><th class="num">Current</th><th class="num">WoW Δ</th><th>Position</th><th>Status</th></tr></thead>
+          <tbody>
+          ${sc.metrics.map(m => `
+            <tr>
+              <td><span class="name">${m.name}</span> ${m.bottleneck ? '<span class="pill pill-copper" style="margin-left:6px"><span class="dot"></span>BOTTLENECK</span>' : ''}</td>
+              <td class="num">${m.target}</td>
+              <td class="num" style="font-weight:600">${typeof m.current === 'number' && m.current < 100 ? m.current.toFixed(1) : m.current}${m.target.includes('%') ? '%' : ''}</td>
+              <td class="num" style="color:${m.delta > 0 ? (m.name.includes('Speeding') || m.name.includes('Distractions') ? 'var(--red)' : 'var(--green)') : (m.name.includes('Speeding') || m.name.includes('Distractions') ? 'var(--green)' : 'var(--red)')}">${m.delta > 0 ? '+' : ''}${m.delta}${typeof m.delta === 'number' && Math.abs(m.delta) < 10 ? (m.target.includes('%') ? ' pts' : '') : ''}</td>
+              <td style="width:200px"><div class="mbar"><div class="${m.status === 'fantastic' ? 'green' : m.status === 'great' ? 'amber' : 'red'}" style="width:${m.status === 'fantastic' ? 95 : m.status === 'great' ? 65 : 35}%"></div></div></td>
+              <td>${m.status === 'fantastic'
+                ? '<span class="pill pill-green"><span class="dot"></span>FANTASTIC</span>'
+                : m.status === 'great'
+                ? '<span class="pill pill-amber"><span class="dot"></span>GREAT</span>'
+                : '<span class="pill pill-red"><span class="dot"></span>FAIR</span>'}
+              </td>
+            </tr>
+          `).join("")}
+          </tbody>
+        </table>
+      </div>
+    </div>
+
+    <div class="card col-6">
+      <div class="card-hd"><h3>What gets you to Fantastic</h3><span class="label">PRIORITIZED</span></div>
+      <div class="card-bd" style="padding-top:8px">
+        <div style="padding:14px;background:rgba(217,119,6,0.08);border:1px solid rgba(217,119,6,0.3);border-radius:2px;margin-bottom:12px">
+          <div class="kicker" style="color:var(--copper-2)">PRIORITY 1</div>
+          <div style="font-family:'Fraunces',serif;font-size:16px;font-weight:600;margin-top:4px">Distractions / Followings</div>
+          <div class="small" style="margin-top:6px">12 events vs target &lt;8 — <b>need to drop 5</b>. 3 drivers contribute 70% of events. Targeted ride-alongs can resolve in 2 wks.</div>
+          <div class="small" style="margin-top:6px"><b>Cost of inaction:</b> <span style="color:var(--red)">$3,800/wk</span> in lost incentive band</div>
+        </div>
+        <div style="padding:14px;background:rgba(217,119,6,0.05);border:1px solid rgba(217,119,6,0.2);border-radius:2px;margin-bottom:12px">
+          <div class="kicker" style="color:var(--copper-2)">PRIORITY 2</div>
+          <div style="font-family:'Fraunces',serif;font-size:16px;font-weight:600;margin-top:4px">Customer Feedback (DCF)</div>
+          <div class="small" style="margin-top:6px">79.4% vs 82% target — gap of 2.6 pts. Often follows from late deliveries; cleaning up Distractions and Following will lift this organically.</div>
+        </div>
+        <div style="padding:14px;background:rgba(217,119,6,0.04);border:1px solid rgba(217,119,6,0.15);border-radius:2px">
+          <div class="kicker" style="color:var(--copper-2)">PRIORITY 3</div>
+          <div style="font-family:'Fraunces',serif;font-size:16px;font-weight:600;margin-top:4px">Mentor (FICO) score</div>
+          <div class="small" style="margin-top:6px">794 vs 800 target.  Tied to harsh-event reduction across drivers.</div>
+        </div>
+      </div>
+    </div>
+
+    <div class="card col-6">
+      <div class="card-hd"><h3>13-week tier history</h3><span class="label">CORRELATES ~1:1 WITH MARGIN</span></div>
+      <div class="card-bd" style="padding-top:14px">
+        <div style="display:flex;height:140px;align-items:flex-end;gap:6px">
+          ${[
+            { t: "GR", v: 56, c: "#FBBF24" },
+            { t: "GR", v: 56, c: "#FBBF24" },
+            { t: "FT", v: 78, c: "#34D399" },
+            { t: "FT", v: 80, c: "#34D399" },
+            { t: "GR", v: 58, c: "#FBBF24" },
+            { t: "GR", v: 60, c: "#FBBF24" },
+            { t: "FT", v: 78, c: "#34D399" },
+            { t: "FT", v: 82, c: "#34D399" },
+            { t: "FT", v: 84, c: "#34D399" },
+            { t: "GR", v: 62, c: "#FBBF24" },
+            { t: "GR", v: 60, c: "#FBBF24" },
+            { t: "GR", v: 58, c: "#FBBF24" },
+            { t: "GR", v: 60, c: "#FBBF24" },
+          ].map((b, i) => `
+            <div style="flex:1;display:flex;flex-direction:column;align-items:center;gap:4px;height:100%;justify-content:flex-end">
+              <div style="width:100%;height:${b.v}%;background:${b.c};border-radius:2px 2px 0 0;min-height:8px"></div>
+              <div class="mono" style="font-size:9px;color:var(--muted)">W${i+5}</div>
+            </div>
+          `).join("")}
+        </div>
+        <div style="display:flex;justify-content:space-between;align-items:center;margin-top:14px">
+          <div class="small">Tier weeks: <b style="color:var(--green)">5 Fantastic</b> · <b style="color:var(--amber)">8 Great</b></div>
+          <div class="small"><b>$ left on table:</b> <span style="color:var(--red)">~$64K</span> in 13 wks (vs all-Fantastic)</div>
+        </div>
+      </div>
+    </div>
+  </div>
+  `;
+}
+
+/* =====================================================================
+   ROUTING
+   ===================================================================== */
+const VIEWS = {
+  dashboard: viewDashboard,
+  financial: viewFinancial,
+  labor: viewLabor,
+  drivers: viewDrivers,
+  fleet: viewFleet,
+  disputes: viewDisputes,
+  scorecard: viewScorecard,
+};
+
+function navigate(view) {
+  const target = VIEWS[view] ? view : 'dashboard';
+  document.querySelectorAll('.nav-item').forEach(n => n.classList.toggle('active', n.dataset.view === target));
+  const content = document.getElementById('content');
+  content.style.opacity = '0';
+  setTimeout(() => {
+    content.innerHTML = VIEWS[target]();
+    content.style.opacity = '1';
+    window.scrollTo({ top: 0, behavior: 'smooth' });
+  }, 80);
+}
+
+document.querySelectorAll('.nav-item').forEach(n => {
+  n.addEventListener('click', () => navigate(n.dataset.view));
+});
+document.getElementById('content').style.transition = 'opacity 0.18s ease';
+
+/* Initial render */
+navigate('dashboard');
+
+/* Animate top-bar revenue gently for liveness */
+let baseRev = 8427;
+setInterval(() => {
+  baseRev += Math.floor(Math.random() * 14);
+  const el = document.getElementById('tb-rev');
+  if (el) el.textContent = '$' + baseRev.toLocaleString();
+}, 3500);
+</script>
+</body>
+</html>
